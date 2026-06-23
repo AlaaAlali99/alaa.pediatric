@@ -443,13 +443,13 @@
 <body>
 
     <div class="header">
-        <div class="header-badge" id="hospitalBadge">🏥 برجاء اختيار الملف</div>
+        <div class="header-badge" id="hospitalBadge">🏥 جاري تحميل البيانات...</div>
         <h1>جــدول المنـاوبـات الشهـري</h1>
-        <p class="subtitle" id="headerSubtitle">اختر ملف schedule.xlsx للمتابعة</p>
+        <p class="subtitle" id="headerSubtitle">يرجى الانتظار...</p>
     </div>
 
-    <!-- MAIN FILE PROMPT -->
-    <div class="file-prompt" id="filePrompt">
+    <!-- MAIN FILE PROMPT (يبقى كخيار احتياطي) -->
+    <div class="file-prompt" id="filePrompt" style="display:none;">
         <span class="icon">📂</span>
         <p>اختر ملف <strong>schedule.xlsx</strong></p>
         <p class="hint">يجب أن يحتوي الملف على 3 صفحات: idari | mnaobat | settings</p>
@@ -581,13 +581,41 @@
             }
         }
 
-        // ==================== FILE INPUT ====================
+        // ==================== تحميل الملف تلقائياً من المسار ====================
+        function loadDefaultFile() {
+            console.log('🔄 محاولة تحميل schedule.xlsx تلقائياً...');
+            document.getElementById('hospitalBadge').textContent = '⏳ جاري تحميل الملف تلقائياً...';
+            document.getElementById('headerSubtitle').textContent = 'schedule.xlsx';
+
+            fetch('./schedule.xlsx')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('الملف غير موجود أو لا يمكن الوصول إليه (status: ' + response.status + ')');
+                    }
+                    console.log('✅ الملف موجود، جاري القراءة...');
+                    return response.arrayBuffer();
+                })
+                .then(function(buffer) {
+                    var data = new Uint8Array(buffer);
+                    var workbook = XLSX.read(data, { type: 'array' });
+                    console.log('✅ تم قراءة الملف بنجاح');
+                    processWorkbook(workbook);
+                })
+                .catch(function(err) {
+                    console.warn('⚠️ فشل التحميل التلقائي:', err.message);
+                    console.log('📂 إظهار زر اختيار الملف اليدوي...');
+                    document.getElementById('filePrompt').style.display = 'block';
+                    document.getElementById('hospitalBadge').textContent = '🏥 برجاء اختيار الملف';
+                    document.getElementById('headerSubtitle').textContent = 'لم يتم العثور على schedule.xlsx تلقائياً';
+                });
+        }
+
+        // ==================== FILE INPUT (خيار احتياطي) ====================
         document.getElementById('mainFileInput').addEventListener('change', function(e) {
             var file = e.target.files[0];
             if (!file) return;
 
             console.log('📂 تم اختيار الملف:', file.name, 'الحجم:', file.size);
-
             document.getElementById('hospitalBadge').textContent = '⏳ جاري قراءة الملف...';
             document.getElementById('headerSubtitle').textContent = file.name;
 
@@ -720,7 +748,6 @@
             var headers = rawData[0];
             console.log('📋 رؤوس الإداري:', headers);
 
-            // Flexible header matching - try multiple variations
             var sectionColIdx = -1;
             var yearIdxMap = {};
 
@@ -752,7 +779,6 @@
             console.log('📍 sectionColIdx:', sectionColIdx);
             console.log('📍 yearIdxMap:', yearIdxMap);
 
-            // If not all columns found, try position-based fallback (col 0 = section, col 1-4 = years)
             if (sectionColIdx === -1) sectionColIdx = 0;
             if (!yearIdxMap[0] && headers.length > 1) yearIdxMap[0] = 1;
             if (!yearIdxMap[1] && headers.length > 2) yearIdxMap[1] = 2;
@@ -822,28 +848,36 @@
 
         // ==================== INIT ====================
         window.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 النظام جاهز - بانتظار اختيار ملف XLSX');
+            console.log('🚀 النظام جاهز - بدء التحميل التلقائي...');
             console.log('💡 افتح Console (F12) لمشاهدة التفاصيل');
 
-            if (typeof XLSX === 'undefined') {
-                document.getElementById('hospitalBadge').textContent = '⏳ جاري تحميل المكتبة...';
-                var checkXLSX = setInterval(function() {
-                    if (typeof XLSX !== 'undefined') {
-                        clearInterval(checkXLSX);
-                        console.log('✅ مكتبة XLSX جاهزة');
-                        document.getElementById('hospitalBadge').textContent = '🏥 برجاء اختيار الملف';
-                    }
-                }, 200);
-                setTimeout(function() {
-                    if (typeof XLSX === 'undefined') {
-                        clearInterval(checkXLSX);
-                        document.getElementById('hospitalBadge').textContent =
-                            '⚠️ تعذر تحميل المكتبة - تأكد من الاتصال';
-                    }
-                }, 10000);
-            } else {
-                console.log('✅ مكتبة XLSX متوفرة');
+            // التأكد من جاهزية مكتبة XLSX ثم التحميل التلقائي
+            function startAutoLoad() {
+                if (typeof XLSX !== 'undefined') {
+                    console.log('✅ مكتبة XLSX متوفرة');
+                    loadDefaultFile();
+                } else {
+                    console.log('⏳ انتظار تحميل مكتبة XLSX...');
+                    var checkXLSX = setInterval(function() {
+                        if (typeof XLSX !== 'undefined') {
+                            clearInterval(checkXLSX);
+                            console.log('✅ مكتبة XLSX جاهزة');
+                            loadDefaultFile();
+                        }
+                    }, 200);
+                    setTimeout(function() {
+                        if (typeof XLSX === 'undefined') {
+                            clearInterval(checkXLSX);
+                            console.error('❌ تعذر تحميل مكتبة XLSX');
+                            document.getElementById('hospitalBadge').textContent =
+                                '⚠️ تعذر تحميل المكتبة - تأكد من الاتصال';
+                            document.getElementById('filePrompt').style.display = 'block';
+                        }
+                    }, 10000);
+                }
             }
+
+            startAutoLoad();
         });
     </script>
 </body>
