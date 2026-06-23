@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جدول المناوبات الشهري</title>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js">
-    </script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <style>
         :root {
             --bg: #0a0a14;
@@ -88,6 +87,49 @@
             color: var(--text-muted);
             font-size: 0.85em;
             letter-spacing: 3px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .loading-spinner .spinner-icon {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+            display: block;
+            margin-bottom: 16px;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .loading-spinner p {
+            font-size: 0.95em;
+            margin-bottom: 4px;
+        }
+
+        .error-msg {
+            text-align: center;
+            padding: 50px 20px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            margin: 20px auto;
+            border: 2px solid #5a2030;
+            max-width: 550px;
+            display: none;
+        }
+        .error-msg .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .error-msg p {
+            color: #e08888;
+            margin-bottom: 6px;
+        }
+        .error-msg .hint {
+            color: var(--text-muted);
+            font-size: 0.8em;
         }
 
         .tab-nav {
@@ -297,51 +339,6 @@
             vertical-align: middle;
         }
 
-        .file-prompt {
-            text-align: center;
-            padding: 50px 20px;
-            background: var(--surface);
-            border-radius: var(--radius);
-            margin: 20px auto;
-            border: 2px dashed var(--border);
-            max-width: 550px;
-        }
-        .file-prompt .icon {
-            font-size: 56px;
-            margin-bottom: 14px;
-            display: block;
-        }
-        .file-prompt p {
-            margin-bottom: 8px;
-            font-size: 0.95em;
-        }
-        .file-prompt .hint {
-            font-size: 0.78em;
-            opacity: 0.6;
-            margin-bottom: 18px;
-        }
-        .file-btn {
-            display: inline-block;
-            padding: 14px 32px;
-            background: var(--gold);
-            color: #1a1a2e;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 0.95em;
-            font-weight: 700;
-            font-family: var(--font);
-            transition: var(--transition);
-        }
-        .file-btn:hover {
-            background: var(--gold-light);
-            box-shadow: 0 8px 25px rgba(201, 160, 80, 0.3);
-            transform: translateY(-2px);
-        }
-        #mainFileInput {
-            display: none;
-        }
-
         .footer-bar {
             text-align: center;
             padding: 18px;
@@ -402,10 +399,7 @@
                 color: #111 !important;
                 font-size: 10px;
             }
-            .tab-nav,
-            .footer-bar,
-            .header-badge,
-            .file-prompt {
+            .tab-nav, .footer-bar, .header-badge, .loading-spinner, .error-msg {
                 display: none !important;
             }
             .tab-content {
@@ -443,20 +437,24 @@
 <body>
 
     <div class="header">
-        <div class="header-badge" id="hospitalBadge">🏥 جاري تحميل البيانات...</div>
+        <div class="header-badge" id="hospitalBadge">🏥 جاري التحميل...</div>
         <h1>جــدول المنـاوبـات الشهـري</h1>
         <p class="subtitle" id="headerSubtitle">يرجى الانتظار...</p>
     </div>
 
-    <!-- MAIN FILE PROMPT (يبقى كخيار احتياطي) -->
-    <div class="file-prompt" id="filePrompt" style="display:none;">
-        <span class="icon">📂</span>
-        <p>اختر ملف <strong>schedule.xlsx</strong></p>
-        <p class="hint">يجب أن يحتوي الملف على 3 صفحات: idari | mnaobat | settings</p>
-        <button class="file-btn" onclick="document.getElementById('mainFileInput').click()">
-            📁 اختر ملف XLSX
-        </button>
-        <input type="file" id="mainFileInput" accept=".xlsx">
+    <!-- شاشة التحميل -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <span class="spinner-icon">⚙️</span>
+        <p>جاري تحميل البيانات من الملف...</p>
+        <p style="font-size:0.75em;opacity:0.6;">schedule.xlsx</p>
+    </div>
+
+    <!-- رسالة الخطأ -->
+    <div class="error-msg" id="errorMsg">
+        <span class="icon">⚠️</span>
+        <p>تعذر تحميل البيانات تلقائياً</p>
+        <p class="hint">تأكد من وجود ملف schedule.xlsx في نفس مجلد الموقع</p>
+        <p class="hint">تأكد من اتصالك بالإنترنت</p>
     </div>
 
     <!-- TAB NAVIGATION -->
@@ -472,10 +470,6 @@
     <!-- TAB 1: المناوبات -->
     <div class="tab-content active" id="tab-mnaobat">
         <div class="table-wrapper">
-            <div id="mnaobatEmpty" style="padding:40px;text-align:center;color:var(--text-muted);">
-                <span style="font-size:40px;">📋</span>
-                <p>بانتظار تحميل البيانات...</p>
-            </div>
             <table id="mnaobatTable" class="mnaobat-table" style="display:none;">
                 <thead id="mnaobatHead"></thead>
                 <tbody id="mnaobatBody"></tbody>
@@ -486,10 +480,6 @@
     <!-- TAB 2: الدوام الإداري -->
     <div class="tab-content" id="tab-idari">
         <div class="table-wrapper idari-wrapper">
-            <div id="idariEmpty" style="padding:40px;text-align:center;color:var(--text-muted);">
-                <span style="font-size:40px;">📋</span>
-                <p>بانتظار تحميل البيانات...</p>
-            </div>
             <table id="idariTable" class="idari-table" style="display:none;">
                 <thead id="idariHead"></thead>
                 <tbody id="idariBody"></tbody>
@@ -513,36 +503,30 @@
             document.getElementById(tabId).classList.add('active');
         }
 
-        // ==================== PROCESS WORKBOOK ====================
         function processWorkbook(workbook) {
             console.log('📊 معالجة الملف...');
-            console.log('📋 الصفحات الموجودة:', workbook.SheetNames);
+            console.log('📋 الصفحات:', workbook.SheetNames);
 
-            document.getElementById('filePrompt').style.display = 'none';
+            document.getElementById('loadingSpinner').style.display = 'none';
             document.getElementById('tabNav').style.display = 'flex';
 
-            // Read settings
             if (workbook.SheetNames.indexOf('settings') !== -1) {
                 var settingsSheet = workbook.Sheets['settings'];
                 var settingsData = XLSX.utils.sheet_to_json(settingsSheet, { header: 1 });
                 settings = {};
                 for (var i = 0; i < settingsData.length; i++) {
                     if (settingsData[i].length >= 2) {
-                        var key = String(settingsData[i][0]).trim();
-                        var val = String(settingsData[i][1]).trim();
-                        settings[key] = val;
+                        settings[String(settingsData[i][0]).trim()] = String(settingsData[i][1]).trim();
                     }
                 }
-                console.log('⚙️ الإعدادات:', settings);
             } else {
-                console.warn('⚠️ صفحة settings غير موجودة');
                 settings = {
-                    'اسم_المشفى': 'مشفى حلب الجامعي',
-                    'الشعبة': 'شعبة الأطفال',
-                    'الشهر_بالعربي': 'حزيران',
-                    'السنة': '2026',
-                    'رقم_الواتساب': '963999999999',
-                    'اسم_المطور': 'علاء العلي'
+                    'اسم_المشفى': 'المشفى',
+                    'الشعبة': '',
+                    'الشهر_بالعربي': '',
+                    'السنة': '',
+                    'رقم_الواتساب': '',
+                    'اسم_المطور': ''
                 };
             }
 
@@ -555,116 +539,59 @@
             document.getElementById('headerSubtitle').textContent = department + ' · ' + monthArabic + ' ' + year;
             document.title = 'جدول المناوبات - ' + hospitalName + ' - ' + monthArabic + ' ' + year;
 
-            var devName = settings['اسم_المطور'] || 'المطور';
-            var phone = settings['رقم_الواتساب'] || '963999999999';
+            var devName = settings['اسم_المطور'] || '';
+            var phone = settings['رقم_الواتساب'] || '';
             var devLink = document.getElementById('devLink');
             devLink.textContent = devName;
             devLink.href = 'https://wa.me/' + phone.replace(/[^0-9]/g, '');
-            document.getElementById('footerBar').style.display = 'block';
+            document.getElementById('footerBar').style.display = devName ? 'block' : 'none';
 
-            // Render idari
             if (workbook.SheetNames.indexOf('idari') !== -1) {
-                var idariData = XLSX.utils.sheet_to_json(workbook.Sheets['idari'], { header: 1 });
-                console.log('📋 idari rows:', idariData.length);
-                renderIdari(idariData);
-            } else {
-                console.warn('⚠️ صفحة idari غير موجودة');
+                renderIdari(XLSX.utils.sheet_to_json(workbook.Sheets['idari'], { header: 1 }));
             }
-
-            // Render mnaobat
             if (workbook.SheetNames.indexOf('mnaobat') !== -1) {
-                var mnaobatData = XLSX.utils.sheet_to_json(workbook.Sheets['mnaobat'], { header: 1 });
-                console.log('🔄 mnaobat rows:', mnaobatData.length);
-                renderMnaobat(mnaobatData);
-            } else {
-                console.warn('⚠️ صفحة mnaobat غير موجودة');
+                renderMnaobat(XLSX.utils.sheet_to_json(workbook.Sheets['mnaobat'], { header: 1 }));
             }
         }
 
-        // ==================== تحميل الملف تلقائياً من المسار ====================
-        function loadDefaultFile() {
-            console.log('🔄 محاولة تحميل schedule.xlsx تلقائياً...');
-            document.getElementById('hospitalBadge').textContent = '⏳ جاري تحميل الملف تلقائياً...';
-            document.getElementById('headerSubtitle').textContent = 'schedule.xlsx';
-
+        function loadSchedule() {
+            console.log('🔄 جاري تحميل schedule.xlsx...');
             fetch('./schedule.xlsx')
                 .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('الملف غير موجود أو لا يمكن الوصول إليه (status: ' + response.status + ')');
-                    }
-                    console.log('✅ الملف موجود، جاري القراءة...');
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
                     return response.arrayBuffer();
                 })
                 .then(function(buffer) {
-                    var data = new Uint8Array(buffer);
-                    var workbook = XLSX.read(data, { type: 'array' });
-                    console.log('✅ تم قراءة الملف بنجاح');
+                    var workbook = XLSX.read(new Uint8Array(buffer), { type: 'array' });
                     processWorkbook(workbook);
                 })
                 .catch(function(err) {
-                    console.warn('⚠️ فشل التحميل التلقائي:', err.message);
-                    console.log('📂 إظهار زر اختيار الملف اليدوي...');
-                    document.getElementById('filePrompt').style.display = 'block';
-                    document.getElementById('hospitalBadge').textContent = '🏥 برجاء اختيار الملف';
-                    document.getElementById('headerSubtitle').textContent = 'لم يتم العثور على schedule.xlsx تلقائياً';
+                    console.error('❌ فشل التحميل:', err.message);
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('errorMsg').style.display = 'block';
+                    document.getElementById('hospitalBadge').textContent = '❌ خطأ في التحميل';
+                    document.getElementById('headerSubtitle').textContent = 'الملف غير موجود أو لا يمكن قراءته';
                 });
         }
 
-        // ==================== FILE INPUT (خيار احتياطي) ====================
-        document.getElementById('mainFileInput').addEventListener('change', function(e) {
-            var file = e.target.files[0];
-            if (!file) return;
-
-            console.log('📂 تم اختيار الملف:', file.name, 'الحجم:', file.size);
-            document.getElementById('hospitalBadge').textContent = '⏳ جاري قراءة الملف...';
-            document.getElementById('headerSubtitle').textContent = file.name;
-
-            var reader = new FileReader();
-            reader.onload = function(ev) {
-                try {
-                    var data = new Uint8Array(ev.target.result);
-                    var workbook = XLSX.read(data, { type: 'array' });
-                    processWorkbook(workbook);
-                } catch (err) {
-                    console.error('❌ خطأ:', err);
-                    alert('⚠️ خطأ في قراءة الملف!\n\n' + err.message);
-                }
-            };
-            reader.onerror = function() {
-                alert('⚠️ فشل قراءة الملف!');
-            };
-            reader.readAsArrayBuffer(file);
-        });
-
-        // ==================== RENDER: المناوبات ====================
         function renderMnaobat(rawData) {
-            console.log('🔄 عرض المناوبات...');
             if (!rawData || rawData.length < 2) return;
-
             var headers = rawData[0];
-            console.log('📋 رؤوس المناوبات:', headers);
-
             var rows = [];
             for (var i = 1; i < rawData.length; i++) {
                 var row = {};
                 var hasData = false;
                 for (var j = 0; j < headers.length; j++) {
-                    var val = (rawData[i][j] !== undefined && rawData[i][j] !== null) ? String(rawData[i][j]).trim() :
-                        '';
+                    var val = (rawData[i][j] !== undefined && rawData[i][j] !== null) ? String(rawData[i][j]).trim() : '';
                     row[headers[j]] = val;
                     if (val) hasData = true;
                 }
                 if (hasData && (row['اليوم'] || row['التاريخ'])) rows.push(row);
             }
-            console.log('📊 صفوف المناوبات:', rows.length);
             if (rows.length === 0) return;
 
-            var head = document.getElementById('mnaobatHead');
-            var body = document.getElementById('mnaobatBody');
-            var table = document.getElementById('mnaobatTable');
-            var empty = document.getElementById('mnaobatEmpty');
-
-            head.innerHTML = '<tr><th class="corner-cell">#</th><th>اليوم</th><th>القسم</th>' +
+            document.getElementById('mnaobatHead').innerHTML =
+                '<tr><th class="corner-cell">#</th><th>اليوم</th><th>القسم</th>' +
                 '<th class="year-header year-col-1">🟣 سنة أولى</th>' +
                 '<th class="year-header year-col-2">🟢 سنة ثانية</th>' +
                 '<th class="year-header year-col-3">🔴 سنة ثالثة</th>' +
@@ -676,15 +603,15 @@
                 if (rows[0].hasOwnProperty(yearCols[k])) colMap[k] = yearCols[k];
             }
 
-            var bodyHTML = '';
-            var prevDay = '';
+            var bodyHTML = '',
+                prevDay = '';
             rows.forEach(function(row) {
                 var dayNum = row['اليوم'] || '';
                 var dateStr = row['التاريخ'] || '';
                 var dayName = row['اليوم_بالعربي'] || '';
                 var section = row['القسم'] || '';
-
                 var dayType = 'normal';
+
                 if (dateStr && dateStr.indexOf('-') !== -1) {
                     try {
                         var d = new Date(dateStr + 'T00:00:00');
@@ -699,18 +626,16 @@
                 var rowClass = '',
                     textClass = '';
                 if (dayType === 'friday') { rowClass = 'row-friday';
-                    textClass = 'friday-text'; } else if (dayType === 'saturday') { rowClass =
-                        'row-saturday';
+                    textClass = 'friday-text'; } else if (dayType === 'saturday') { rowClass = 'row-saturday';
                     textClass = 'saturday-text'; }
 
-                var isFirstOfDay = (dayNum !== prevDay);
+                var isFirst = (dayNum !== prevDay);
                 prevDay = dayNum;
 
-                bodyHTML += '<tr class="' + rowClass + (isFirstOfDay ? ' day-first-row' : '') + '">';
-                if (isFirstOfDay) {
+                bodyHTML += '<tr class="' + rowClass + (isFirst ? ' day-first-row' : '') + '">';
+                if (isFirst) {
                     bodyHTML += '<td class="day-num ' + textClass + '" rowspan="7">' + dayNum + '</td>';
-                    bodyHTML += '<td rowspan="7"><span class="day-name ' + textClass + '">' + dayName +
-                        '</span></td>';
+                    bodyHTML += '<td rowspan="7"><span class="day-name ' + textClass + '">' + dayName + '</span></td>';
                 }
                 bodyHTML += '<td class="section-name-cell">' + section + '</td>';
                 for (var y = 0; y < 4; y++) {
@@ -719,74 +644,39 @@
                     if (!namesStr || namesStr === 'راحة') {
                         bodyHTML += '<span class="rest-note">—</span>';
                     } else {
-                        var names = namesStr.split(/[،,;\-–—]+/).filter(function(n) { return n.trim() !== ''; });
-                        names.forEach(function(n) { bodyHTML += '<span>' + n.trim() + '</span>'; });
+                        namesStr.split(/[،,;\-–—]+/).filter(function(n) { return n.trim(); }).forEach(function(n) {
+                            bodyHTML += '<span>' + n.trim() + '</span>';
+                        });
                     }
                     bodyHTML += '</div></td>';
                 }
                 bodyHTML += '</tr>';
             });
 
-            body.innerHTML = bodyHTML;
-            table.style.display = 'table';
-            empty.style.display = 'none';
-            console.log('✅ المناوبات تمت');
+            document.getElementById('mnaobatBody').innerHTML = bodyHTML;
+            document.getElementById('mnaobatTable').style.display = 'table';
         }
 
-        // ==================== RENDER: الدوام الإداري ====================
         function renderIdari(rawData) {
-            console.log('📋 عرض الدوام الإداري...');
-            console.log('📋 البيانات الخام (أول 3 صفوف):', rawData.slice(0, 3));
-
-            if (!rawData || rawData.length < 2) {
-                console.warn('⚠️ بيانات الإداري أقل من صفين');
-                document.getElementById('idariEmpty').innerHTML =
-                    '<span style="font-size:40px;">⚠️</span><p>بيانات الدوام الإداري فارغة</p>';
-                return;
-            }
-
+            if (!rawData || rawData.length < 2) return;
             var headers = rawData[0];
-            console.log('📋 رؤوس الإداري:', headers);
-
-            var sectionColIdx = -1;
-            var yearIdxMap = {};
+            var sectionColIdx = -1,
+                yearIdxMap = {};
 
             for (var h = 0; h < headers.length; h++) {
-                var headerVal = String(headers[h] || '').trim();
-                console.log('  header[' + h + ']: "' + headerVal + '"');
-
-                if (headerVal === 'القسم' || headerVal === 'القسم_الثابت' || headerVal === 'قسم') {
-                    sectionColIdx = h;
-                }
-                if (headerVal === 'اولى' || headerVal === 'أولى' || headerVal === 'الاولى' || headerVal === 'الأولى' ||
-                    headerVal === 'سنة اولى' || headerVal === 'السنة الاولى') {
-                    yearIdxMap[0] = h;
-                }
-                if (headerVal === 'ثانية' || headerVal === 'الثانية' || headerVal === 'سنة ثانية' || headerVal ===
-                    'السنة الثانية') {
-                    yearIdxMap[1] = h;
-                }
-                if (headerVal === 'ثالثة' || headerVal === 'الثالثة' || headerVal === 'سنة ثالثة' || headerVal ===
-                    'السنة الثالثة') {
-                    yearIdxMap[2] = h;
-                }
-                if (headerVal === 'رابعة' || headerVal === 'الرابعة' || headerVal === 'سنة رابعة' || headerVal ===
-                    'السنة الرابعة') {
-                    yearIdxMap[3] = h;
-                }
+                var hv = String(headers[h] || '').trim();
+                if (hv === 'القسم' || hv === 'القسم_الثابت' || hv === 'قسم') sectionColIdx = h;
+                if (hv.match(/أولى|الاولى|الأولى/)) yearIdxMap[0] = h;
+                if (hv.match(/ثانية|الثانية/)) yearIdxMap[1] = h;
+                if (hv.match(/ثالثة|الثالثة/)) yearIdxMap[2] = h;
+                if (hv.match(/رابعة|الرابعة/)) yearIdxMap[3] = h;
             }
 
-            console.log('📍 sectionColIdx:', sectionColIdx);
-            console.log('📍 yearIdxMap:', yearIdxMap);
-
             if (sectionColIdx === -1) sectionColIdx = 0;
-            if (!yearIdxMap[0] && headers.length > 1) yearIdxMap[0] = 1;
-            if (!yearIdxMap[1] && headers.length > 2) yearIdxMap[1] = 2;
-            if (!yearIdxMap[2] && headers.length > 3) yearIdxMap[2] = 3;
-            if (!yearIdxMap[3] && headers.length > 4) yearIdxMap[3] = 4;
-
-            console.log('📍 FINAL sectionColIdx:', sectionColIdx);
-            console.log('📍 FINAL yearIdxMap:', yearIdxMap);
+            if (yearIdxMap[0] === undefined && headers.length > 1) yearIdxMap[0] = 1;
+            if (yearIdxMap[1] === undefined && headers.length > 2) yearIdxMap[1] = 2;
+            if (yearIdxMap[2] === undefined && headers.length > 3) yearIdxMap[2] = 3;
+            if (yearIdxMap[3] === undefined && headers.length > 4) yearIdxMap[3] = 4;
 
             var rows = [];
             for (var i = 1; i < rawData.length; i++) {
@@ -795,29 +685,15 @@
                     var rowObj = { '_section': sectionVal };
                     for (var y = 0; y < 4; y++) {
                         var idx = yearIdxMap[y];
-                        rowObj['_year' + y] = (idx !== undefined && rawData[i][idx] !== undefined) ? String(rawData[i][
-                            idx
-                        ] || '').trim() : '';
+                        rowObj['_year' + y] = (idx !== undefined && rawData[i][idx] !== undefined) ? String(rawData[i][idx] || '').trim() : '';
                     }
                     rows.push(rowObj);
                 }
             }
+            if (rows.length === 0) return;
 
-            console.log('📊 عدد أقسام الإداري:', rows.length);
-            console.log('📊 الصفوف:', rows);
-
-            if (rows.length === 0) {
-                document.getElementById('idariEmpty').innerHTML =
-                    '<span style="font-size:40px;">⚠️</span><p>لا توجد أقسام في بيانات الإداري</p>';
-                return;
-            }
-
-            var head = document.getElementById('idariHead');
-            var body = document.getElementById('idariBody');
-            var table = document.getElementById('idariTable');
-            var empty = document.getElementById('idariEmpty');
-
-            head.innerHTML = '<tr><th class="corner-cell">القسم</th>' +
+            document.getElementById('idariHead').innerHTML =
+                '<tr><th class="corner-cell">القسم</th>' +
                 '<th class="year-header year-col-1">🟣 السنة الأولى</th>' +
                 '<th class="year-header year-col-2">🟢 السنة الثانية</th>' +
                 '<th class="year-header year-col-3">🔴 السنة الثالثة</th>' +
@@ -832,52 +708,40 @@
                     if (!namesStr) {
                         bodyHTML += '<span style="color:#555;">—</span>';
                     } else {
-                        var names = namesStr.split(/[،,;\-–—]+/).filter(function(n) { return n.trim() !== ''; });
-                        names.forEach(function(n) { bodyHTML += '<span>' + n.trim() + '</span>'; });
+                        namesStr.split(/[،,;\-–—]+/).filter(function(n) { return n.trim(); }).forEach(function(n) {
+                            bodyHTML += '<span>' + n.trim() + '</span>';
+                        });
                     }
                     bodyHTML += '</div></td>';
                 }
                 bodyHTML += '</tr>';
             });
 
-            body.innerHTML = bodyHTML;
-            table.style.display = 'table';
-            empty.style.display = 'none';
-            console.log('✅ الدوام الإداري تم');
+            document.getElementById('idariBody').innerHTML = bodyHTML;
+            document.getElementById('idariTable').style.display = 'table';
         }
 
-        // ==================== INIT ====================
         window.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 النظام جاهز - بدء التحميل التلقائي...');
-            console.log('💡 افتح Console (F12) لمشاهدة التفاصيل');
-
-            // التأكد من جاهزية مكتبة XLSX ثم التحميل التلقائي
-            function startAutoLoad() {
-                if (typeof XLSX !== 'undefined') {
-                    console.log('✅ مكتبة XLSX متوفرة');
-                    loadDefaultFile();
-                } else {
-                    console.log('⏳ انتظار تحميل مكتبة XLSX...');
-                    var checkXLSX = setInterval(function() {
-                        if (typeof XLSX !== 'undefined') {
-                            clearInterval(checkXLSX);
-                            console.log('✅ مكتبة XLSX جاهزة');
-                            loadDefaultFile();
-                        }
-                    }, 200);
-                    setTimeout(function() {
-                        if (typeof XLSX === 'undefined') {
-                            clearInterval(checkXLSX);
-                            console.error('❌ تعذر تحميل مكتبة XLSX');
-                            document.getElementById('hospitalBadge').textContent =
-                                '⚠️ تعذر تحميل المكتبة - تأكد من الاتصال';
-                            document.getElementById('filePrompt').style.display = 'block';
-                        }
-                    }, 10000);
-                }
+            console.log('🚀 بدء التحميل التلقائي...');
+            if (typeof XLSX === 'undefined') {
+                var check = setInterval(function() {
+                    if (typeof XLSX !== 'undefined') {
+                        clearInterval(check);
+                        loadSchedule();
+                    }
+                }, 200);
+                setTimeout(function() {
+                    if (typeof XLSX === 'undefined') {
+                        clearInterval(check);
+                        document.getElementById('loadingSpinner').style.display = 'none';
+                        document.getElementById('errorMsg').style.display = 'block';
+                        document.getElementById('hospitalBadge').textContent = '⚠️ خطأ';
+                        document.getElementById('headerSubtitle').textContent = 'تعذر تحميل المكتبة';
+                    }
+                }, 10000);
+            } else {
+                loadSchedule();
             }
-
-            startAutoLoad();
         });
     </script>
 </body>
