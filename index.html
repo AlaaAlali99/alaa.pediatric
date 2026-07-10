@@ -1,699 +1,1107 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>جدول المناوبات · التعديلات الجديدة</title>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js">
-  </script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول المناوبات الشهري</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg: #0a0a14;
+            --surface: #141428;
+            --surface2: #1c1c36;
+            --gold: #c9a050;
+            --gold-light: #e0c878;
+            --gold-dark: #8b6914;
+            --text: #d4ccbc;
+            --text-bright: #f0e8d8;
+            --text-muted: #8a8278;
+            --border: #2a2a3f;
+            --friday-bg: rgba(180, 130, 60, 0.12);
+            --saturday-bg: rgba(100, 140, 180, 0.1);
+            --accent1: #7c6ff7;
+            --accent2: #00c49a;
+            --accent3: #f07167;
+            --accent4: #4da6ff;
+            --today-bg: rgba(70, 150, 220, 0.2);
+            --today-border: #4da6ff;
+            --radius: 14px;
+            --radius-sm: 8px;
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            --font: 'Segoe UI', 'Tahoma', 'Geneva', sans-serif;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --highlight-bg: rgba(255, 215, 0, 0.2);
+            --highlight-border: #ffd700;
+            --clicked-bg: rgba(255, 255, 255, 0.14);
+            --clicked-shadow: 0 0 22px rgba(255, 255, 255, 0.3);
+            --clicked-border: rgba(255, 255, 255, 0.7);
+        }
 
-    :root {
-      --bg: #0a0a14;
-      --surface: #141428;
-      --surface2: #1c1c36;
-      --gold: #c9a050;
-      --gold-light: #e0c878;
-      --gold-dark: #8b6914;
-      --text: #d4ccbc;
-      --text-bright: #f0e8d8;
-      --text-muted: #8a8278;
-      --border: #2a2a3f;
-      --friday-bg: rgba(180, 130, 60, 0.12);
-      --saturday-bg: rgba(100, 140, 180, 0.1);
-      --accent1: #7c6ff7;
-      --accent2: #00c49a;
-      --accent3: #f07167;
-      --accent4: #4da6ff;
-      --radius: 14px;
-      --radius-sm: 8px;
-      --shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-      --font: 'Segoe UI', 'Tahoma', 'Geneva', sans-serif;
-      --transition: 0.2s ease;
-      --today-glow: rgba(255, 215, 0, 0.25);
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      background: var(--bg);
-      background-image: radial-gradient(ellipse at 15% 15%, rgba(120, 100, 60, 0.06) 0%, transparent 55%), radial-gradient(ellipse at 85% 80%, rgba(60, 80, 120, 0.05) 0%, transparent 55%);
-      color: var(--text);
-      font-family: var(--font);
-      min-height: 100vh;
-      padding: 16px;
-      direction: rtl;
-      line-height: 1.5;
-    }
+        body {
+            background: var(--bg);
+            background-image: radial-gradient(ellipse at 15% 15%, rgba(120, 100, 60, 0.06) 0%, transparent 55%), radial-gradient(ellipse at 85% 80%, rgba(60, 80, 120, 0.05) 0%, transparent 55%);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+            padding: 16px;
+            direction: rtl;
+            line-height: 1.5;
+        }
 
-    .header {
-      text-align: center;
-      padding: 24px 16px 18px;
-      position: relative;
-    }
-    .header::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 240px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
-    .header-badge {
-      display: inline-block;
-      background: rgba(201, 160, 80, 0.1);
-      border: 1px solid rgba(201, 160, 80, 0.25);
-      padding: 6px 18px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      letter-spacing: 3px;
-      color: var(--gold-light);
-      margin-bottom: 10px;
-    }
-    .header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      background: linear-gradient(180deg, #f0d78c 0%, #c9a050 50%, #a07830 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      letter-spacing: 2px;
-    }
+        .header {
+            text-align: center;
+            padding: 28px 16px 22px;
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 240px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+        .header-badge {
+            display: inline-block;
+            background: rgba(201, 160, 80, 0.1);
+            border: 1px solid rgba(201, 160, 80, 0.25);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.78em;
+            letter-spacing: 3px;
+            color: var(--gold-light);
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            font-size: 2em;
+            font-weight: 700;
+            background: linear-gradient(180deg, #f0d78c 0%, #c9a050 50%, #a07830 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+        .header .subtitle {
+            color: var(--text-muted);
+            font-size: 0.85em;
+            letter-spacing: 3px;
+        }
 
-    .search-container {
-      display: flex;
-      justify-content: center;
-      margin: 20px auto 8px;
-      max-width: 450px;
-    }
-    .search-wrapper {
-      position: relative;
-      width: 100%;
-    }
-    #searchInput {
-      width: 100%;
-      padding: 12px 50px 12px 20px;
-      border-radius: 40px;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      color: var(--text-bright);
-      font-family: var(--font);
-      font-size: 0.95rem;
-      outline: none;
-      transition: var(--transition);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-    #searchInput::placeholder {
-      color: var(--text-muted);
-    }
-    #searchInput:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(201, 160, 80, 0.3);
-    }
-    .search-icon {
-      position: absolute;
-      top: 50%;
-      right: 18px;
-      transform: translateY(-50%);
-      color: var(--gold-light);
-      font-size: 1.2rem;
-      pointer-events: none;
-    }
+        .loading-spinner {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .loading-spinner .spinner-icon {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+            display: block;
+            margin-bottom: 16px;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .loading-spinner p {
+            font-size: 0.95em;
+            margin-bottom: 4px;
+        }
 
-    .today-panel {
-      background: var(--surface);
-      border: 1px solid var(--gold-dark);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      margin: 20px 0 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }
-    .today-info {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      font-size: 1.1rem;
-      color: var(--text-bright);
-    }
-    .today-date {
-      font-weight: 700;
-      color: var(--gold-light);
-      background: rgba(201,160,80,0.15);
-      padding: 6px 18px;
-      border-radius: 30px;
-      letter-spacing: 1px;
-    }
-    .nav-buttons {
-      display: flex;
-      gap: 8px;
-    }
-    .nav-btn {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--gold-light);
-      font-size: 1rem;
-      padding: 10px 18px;
-      border-radius: 30px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .nav-btn:hover {
-      background: var(--gold-dark);
-      color: #fff;
-      border-color: var(--gold);
-    }
-    .today-names {
-      background: rgba(255,215,0,0.08);
-      padding: 10px 18px;
-      border-radius: 30px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+        .error-msg {
+            text-align: center;
+            padding: 50px 20px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            margin: 20px auto;
+            border: 2px solid #5a2030;
+            max-width: 550px;
+            display: none;
+        }
+        .error-msg .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .error-msg p {
+            color: #e08888;
+            margin-bottom: 6px;
+        }
+        .error-msg .hint {
+            color: var(--text-muted);
+            font-size: 0.8em;
+        }
 
-    .tab-nav {
-      display: flex;
-      gap: 4px;
-      justify-content: center;
-      margin: 20px auto 0;
-      background: var(--surface);
-      border-radius: 40px;
-      padding: 5px;
-      max-width: 500px;
-      border: 1px solid var(--border);
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 12px 16px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      border-radius: 35px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: var(--transition);
-      font-family: var(--font);
-    }
-    .tab-btn.active {
-      background: var(--surface2);
-      color: var(--gold-light);
-      font-weight: 700;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-    }
+        .controls-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            max-width: 900px;
+            padding: 0 10px;
+        }
+        .search-container {
+            position: relative;
+            flex: 1 1 260px;
+            max-width: 400px;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 12px 44px 12px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-bright);
+            font-family: var(--font);
+            font-size: 0.9em;
+            transition: var(--transition);
+            outline: none;
+            direction: rtl;
+        }
+        .search-container input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 12px rgba(201, 160, 80, 0.2);
+        }
+        .search-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2em;
+            pointer-events: none;
+        }
+        .clear-search {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.3em;
+            padding: 0;
+            display: none;
+            line-height: 1;
+        }
+        .clear-search.visible {
+            display: block;
+        }
+        .clear-search:hover {
+            color: #fff;
+        }
 
-    .tab-content {
-      display: none;
-      animation: fadeSlide 0.3s ease;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        .today-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin: 8px auto 16px;
+            max-width: 800px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+        }
+        .today-nav-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--gold-light);
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: var(--font);
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: var(--transition);
+            white-space: nowrap;
+            align-self: center;
+        }
+        .today-nav-btn:hover {
+            background: var(--gold-dark);
+            color: #fff;
+            border-color: var(--gold);
+        }
+        .today-nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .today-info {
+            text-align: right;
+            flex: 1;
+            min-width: 200px;
+        }
+        .today-date-big {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .today-section {
+            margin-bottom: 12px;
+            background: var(--surface2);
+            border-radius: 10px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .today-section:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .today-section-active {
+            background: rgba(201, 160, 80, 0.2) !important;
+            border-color: var(--gold);
+        }
+        .today-section-title {
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+        .today-years {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .today-year-group {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .today-year-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        .today-year-names {
+            color: var(--text-bright);
+            font-size: 0.9em;
+        }
+        .today-year-names .student-name {
+            color: inherit;
+        }
+        .today-empty {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9em;
+            text-align: center;
+        }
 
-    .table-wrapper {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow-x: auto;
-      margin: 16px 0;
-      border: 1px solid var(--border);
-      max-height: 75vh;
-    }
+        .tab-nav {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin: 24px auto 0;
+            background: var(--surface);
+            border-radius: 40px;
+            padding: 5px;
+            max-width: 500px;
+            border: 1px solid var(--border);
+            z-index: 1;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 35px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: var(--transition);
+            font-family: var(--font);
+            white-space: nowrap;
+        }
+        .tab-btn:hover {
+            color: var(--text-bright);
+        }
+        .tab-btn.active {
+            background: var(--surface2);
+            color: var(--gold-light);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        .tab-icon {
+            margin-left: 5px;
+            font-size: 1.1em;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 950px;
-      font-size: 0.85rem;
-    }
-    .idari-table {
-      min-width: 600px;
-    }
+        .tab-content {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    thead th {
-      background: var(--surface2);
-      padding: 12px 8px;
-      text-align: center;
-      font-weight: 600;
-      color: var(--gold-light);
-      border-bottom: 2px solid var(--gold-dark);
-      position: sticky;
-      top: 0;
-      z-index: 3;
-      white-space: nowrap;
-    }
-    .year-header {
-      border-bottom: 3px solid var(--gold);
-    }
-    .year-col-1 { border-bottom-color: var(--accent1); color: #b8b0ff; }
-    .year-col-2 { border-bottom-color: var(--accent2); color: #60e0c8; }
-    .year-col-3 { border-bottom-color: var(--accent3); color: #ffa098; }
-    .year-col-4 { border-bottom-color: var(--accent4); color: #80c4ff; }
+        .table-wrapper {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            margin: 16px 0;
+            border: 1px solid var(--border);
+            -webkit-overflow-scrolling: touch;
+            max-height: 75vh;
+        }
+        .table-wrapper.idari-wrapper {
+            max-height: none;
+        }
 
-    tbody td {
-      padding: 10px 6px;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-    .day-num {
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: var(--text-bright);
-    }
-    .day-name {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      display: block;
-    }
-    .section-cell {
-      font-weight: 600;
-      color: var(--gold-light);
-      text-align: right !important;
-      padding-right: 12px !important;
-      white-space: nowrap;
-    }
-    .name-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      align-items: center;
-    }
-    .name-stack span {
-      font-size: 0.95rem;   /* زيادة طفيفة كما طلبت */
-      font-weight: 500;
-      color: #f0e8d8;
-      white-space: nowrap;
-      transition: all 0.15s;
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-    .highlight-name {
-      background: #f7c744 !important;
-      color: #0a0a14 !important;
-      font-weight: 700 !important;
-      box-shadow: 0 0 12px #f7b500;
-      transform: scale(1.02);
-    }
-    tr.row-friday td {
-      background: var(--friday-bg);
-    }
-    tr.row-saturday td {
-      background: var(--saturday-bg);
-    }
-    .friday-text { color: #e0a040 !important; }
-    .saturday-text { color: #80b8e0 !important; }
+        table.mnaobat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8em;
+            table-layout: auto;
+        }
 
-    /* صف اليوم الحالي مميز */
-    tr.today-row {
-      background: rgba(255, 215, 0, 0.18) !important;
-      border-left: 4px solid var(--gold-light);
-      border-right: 4px solid var(--gold-light);
-      box-shadow: inset 0 0 20px rgba(201,160,80,0.4);
-    }
-    tr.today-row td {
-      background: transparent !important;
-      font-weight: 500;
-    }
+        table.mnaobat-table thead th:first-child,
+        table.mnaobat-table tbody td:first-child {
+            width: 35px;
+            min-width: 35px;
+            padding: 8px 2px;
+        }
+        table.mnaobat-table thead th:nth-child(2),
+        table.mnaobat-table tbody td:nth-child(2) {
+            width: 60px;
+            min-width: 60px;
+            padding: 8px 2px;
+        }
+        table.mnaobat-table thead th:nth-child(3),
+        table.mnaobat-table tbody td:nth-child(3) {
+            width: 70px;
+            min-width: 70px;
+            padding: 8px 4px;
+        }
 
-    /* تحديد الصف عند الضغط (أكثر وضوحاً) */
-    tr.selected-row {
-      outline: 3px solid #ffbb2e !important;
-      outline-offset: -2px;
-      background: rgba(255, 200, 40, 0.2) !important;
-      box-shadow: 0 0 18px #ffb300;
-    }
+        table.mnaobat-table thead th:nth-child(4),
+        table.mnaobat-table thead th:nth-child(5),
+        table.mnaobat-table thead th:nth-child(6),
+        table.mnaobat-table thead th:nth-child(7) {
+            width: auto;
+            padding: 6px 4px;
+            white-space: nowrap;
+        }
 
-    .idari-section-cell {
-      font-weight: 700;
-      color: var(--gold-light);
-      text-align: right !important;
-      padding-right: 14px !important;
-      background: var(--surface2);
-    }
+        table.mnaobat-table tbody td:nth-child(4),
+        table.mnaobat-table tbody td:nth-child(5),
+        table.mnaobat-table tbody td:nth-child(6),
+        table.mnaobat-table tbody td:nth-child(7) {
+            padding: 6px 4px;
+            white-space: nowrap;
+        }
 
-    .footer-bar {
-      text-align: center;
-      padding: 18px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
+        tr.row-friday.row-clicked td {
+            background: rgba(255, 255, 255, 0.18) !important;
+            box-shadow: var(--clicked-shadow) !important;
+            outline: 2px solid var(--clicked-border) !important;
+            outline-offset: -2px !important;
+        }
+        tr.row-saturday.row-clicked td {
+            background: rgba(255, 255, 255, 0.18) !important;
+            box-shadow: var(--clicked-shadow) !important;
+            outline: 2px solid var(--clicked-border) !important;
+            outline-offset: -2px !important;
+        }
 
-    @media (max-width: 700px) {
-      .today-panel {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-  </style>
+        tr.row-friday.row-clicked td.day-num.clicked-highlight,
+        tr.row-friday.row-clicked td.clicked-highlight-dayname,
+        tr.row-saturday.row-clicked td.day-num.clicked-highlight,
+        tr.row-saturday.row-clicked td.clicked-highlight-dayname {
+            background: rgba(255, 255, 255, 0.25) !important;
+            box-shadow: 0 0 24px rgba(255, 255, 255, 0.5) !important;
+            outline: 2px solid #fff !important;
+            outline-offset: -2px !important;
+        }
+
+        td.day-num.clicked-highlight,
+        td.clicked-highlight-dayname {
+            background: var(--clicked-bg) !important;
+            box-shadow: var(--clicked-shadow) !important;
+            outline: 2px solid var(--clicked-border) !important;
+            outline-offset: -2px !important;
+        }
+
+        thead th {
+            background: var(--surface2);
+            padding: 13px 6px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--gold-light);
+            border-bottom: 2px solid var(--gold-dark);
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            letter-spacing: 0.5px;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        thead th.corner-cell {
+            border-radius: 0 var(--radius-sm) 0 0;
+        }
+        thead th.year-header {
+            border-bottom: 3px solid var(--gold);
+            font-size: 0.95em;
+        }
+        thead th.year-col-1 { border-bottom-color: var(--accent1); color: #b8b0ff; }
+        thead th.year-col-2 { border-bottom-color: var(--accent2); color: #60e0c8; }
+        thead th.year-col-3 { border-bottom-color: var(--accent3); color: #ffa098; }
+        thead th.year-col-4 { border-bottom-color: var(--accent4); color: #80c4ff; }
+
+        tbody td {
+            padding: 6px 4px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+            cursor: default;
+            word-break: break-word;
+            white-space: normal;
+        }
+        .section-name-cell,
+        .day-num,
+        .day-name {
+            white-space: nowrap;
+        }
+
+        tr.row-friday td { background: var(--friday-bg) !important; }
+        tr.row-saturday td { background: var(--saturday-bg) !important; }
+
+        tr.row-today td {
+            background: var(--today-bg) !important;
+            box-shadow: inset 0 0 20px rgba(77, 166, 255, 0.15);
+        }
+        tr.row-today td:first-of-type { border-right: 3px solid var(--today-border); }
+
+        tr.row-clicked td {
+            background: var(--clicked-bg) !important;
+            box-shadow: var(--clicked-shadow) !important;
+            outline: 2px solid var(--clicked-border) !important;
+            outline-offset: -2px !important;
+            transition: all 0.12s ease !important;
+        }
+        tr.row-today.row-clicked td {
+            background: rgba(100, 180, 255, 0.3) !important;
+            box-shadow: 0 0 28px rgba(77, 166, 255, 0.55), var(--clicked-shadow) !important;
+            outline-color: var(--today-border) !important;
+        }
+
+        .highlight-name {
+            background: var(--highlight-bg);
+            color: #fff;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 5px;
+            border: 1px solid var(--highlight-border);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.35);
+            display: inline-block;
+        }
+
+        .day-num { font-weight: 700; font-size: 1.1em; color: var(--text-bright); }
+        .day-name { font-size: 0.8em; color: var(--text-muted); display: block; }
+        .friday-text { color: #e0a040 !important; }
+        .saturday-text { color: #80b8e0 !important; }
+        .section-name-cell {
+            font-weight: 600;
+            color: var(--gold-light);
+            text-align: right !important;
+            padding-right: 8px !important;
+            white-space: nowrap;
+        }
+
+        .name-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+        }
+        /* توحيد حجم الخط في كلا الجدولين (متطابق تماماً) */
+        #mnaobatTable .name-stack span,
+        #idariTable .name-stack span {
+            font-size: 1.15em;
+        }
+        .name-stack span {
+            display: block;
+            color: #e8e0d0;
+            line-height: 1.4;
+            white-space: nowrap;
+        }
+        .name-stack .rest-note { color: #5a5a6e; font-style: italic; font-size: 0.85em; }
+
+        .section-header-cell {
+            font-weight: 700 !important;
+            color: var(--gold-light) !important;
+            text-align: right !important;
+            padding-right: 14px !important;
+            font-size: 1em !important;
+            background: var(--surface2) !important;
+            border-bottom: 1px solid var(--gold-dark) !important;
+            white-space: nowrap;
+        }
+        .section-header-cell::before {
+            content: '◆ ';
+            color: var(--gold);
+            font-size: 0.65em;
+            vertical-align: middle;
+        }
+
+        .footer-bar {
+            text-align: center;
+            padding: 18px;
+            font-size: 0.75em;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+        .footer-bar a { color: var(--gold-light); text-decoration: none; font-weight: 600; }
+        .footer-bar a:hover { color: #fff; text-shadow: 0 0 12px rgba(201, 160, 80, 0.5); }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.4em; }
+            .tab-nav { max-width: 100%; border-radius: 30px; }
+            .tab-btn { padding: 10px 12px; font-size: 0.75em; }
+            table { font-size: 0.7em; }
+            .today-panel { flex-direction: column; align-items: center; }
+            .today-nav-btn { align-self: stretch; text-align: center; }
+        }
+
+        .table-wrapper::-webkit-scrollbar { height: 6px; width: 6px; }
+        .table-wrapper::-webkit-scrollbar-track { background: var(--surface); border-radius: 8px; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 8px; }
+        .table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--gold-dark); }
+
+        @media print {
+            body { background: #fff !important; color: #111 !important; font-size: 10px; }
+            .tab-nav, .footer-bar, .header-badge, .loading-spinner, .error-msg, .controls-bar, .today-panel { display: none !important; }
+            .tab-content { display: block !important; }
+            .tab-content:not(.active) { display: none !important; }
+            .table-wrapper { box-shadow: none; border: 1px solid #999; max-height: none; }
+            .header h1 { -webkit-text-fill-color: #222; color: #222; }
+            thead th { background: #e8e8e8; color: #333; border-bottom-color: #666; }
+            tr.row-friday td { background: #fff8e8 !important; }
+            tr.row-saturday td { background: #f0f6fa !important; }
+            tr.row-today td { background: #e6f2ff !important; }
+            .highlight-name { background: #ffeb3b; color: #000; border: 1px solid #fbc02d; }
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
+<div class="header">
     <div class="header-badge" id="hospitalBadge">🏥 جاري التحميل...</div>
     <h1>جــدول المنـاوبـات الشهـري</h1>
     <p class="subtitle" id="headerSubtitle">يرجى الانتظار...</p>
-  </div>
+</div>
+<div class="loading-spinner" id="loadingSpinner"><span class="spinner-icon">⚙️</span><p>جاري تحميل البيانات...</p><p style="font-size:0.75em;opacity:0.6;">schedule.xlsx</p></div>
+<div class="error-msg" id="errorMsg"><span class="icon">⚠️</span><p>تعذر تحميل البيانات</p><p class="hint">تأكد من وجود ملف schedule.xlsx</p></div>
 
-  <!-- شريط البحث -->
-  <div class="search-container">
-    <div class="search-wrapper">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="ابحث عن اسم طالب ..." autocomplete="off">
+<div class="controls-bar" id="controlsBar" style="display:none;">
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="ابحث عن اسم طالب..." autocomplete="off">
+        <button class="clear-search" id="clearSearchBtn" title="مسح البحث">✕</button>
     </div>
-  </div>
+</div>
 
-  <!-- لوحة اليوم مع أزرار التنقل -->
-  <div class="today-panel" id="todayPanel" style="display: none;">
+<div class="today-panel" id="todayPanel" style="display:none;">
+    <button class="today-nav-btn" id="prevDayBtn" title="اليوم السابق">◀ السابق</button>
     <div class="today-info">
-      <span>📅 مناوبو اليوم</span>
-      <span class="today-date" id="todayDateDisplay"></span>
+        <div class="today-date-big" id="todayDateDisplay">—</div>
+        <div id="todaySectionsContainer"></div>
     </div>
-    <div class="today-names" id="todayNamesList"></div>
-    <div class="nav-buttons">
-      <button class="nav-btn" id="prevDayBtn">◀ السابق</button>
-      <button class="nav-btn" id="nextDayBtn">التالي ▶</button>
-    </div>
-  </div>
+    <button class="today-nav-btn" id="nextDayBtn" title="اليوم التالي">التالي ▶</button>
+</div>
 
-  <div class="loading-spinner" id="loadingSpinner" style="text-align:center;padding:50px;">
-    <span style="font-size:3rem;">⚙️</span>
-    <p>جاري تحميل البيانات...</p>
-  </div>
+<div class="tab-nav" id="tabNav" style="display:none;">
+    <button class="tab-btn active" data-tab="tab-mnaobat" onclick="switchTab('tab-mnaobat')"><span class="tab-icon">🔄</span> المناوبات</button>
+    <button class="tab-btn" data-tab="tab-idari" onclick="switchTab('tab-idari')"><span class="tab-icon">📋</span> الدوام الإداري</button>
+</div>
 
-  <div class="tab-nav" id="tabNav" style="display:none;">
-    <button class="tab-btn active" data-tab="tab-mnaobat">🔄 المناوبات</button>
-    <button class="tab-btn" data-tab="tab-idari">📋 الدوام الإداري</button>
-  </div>
+<div class="tab-content active" id="tab-mnaobat">
+    <div class="table-wrapper"><table id="mnaobatTable" class="mnaobat-table" style="display:none;"><thead id="mnaobatHead"></thead><tbody id="mnaobatBody"></tbody></table></div>
+</div>
+<div class="tab-content" id="tab-idari">
+    <div class="table-wrapper idari-wrapper"><table id="idariTable" class="idari-table" style="display:none;"><thead id="idariHead"></thead><tbody id="idariBody"></tbody></table></div>
+</div>
+<div class="footer-bar" id="footerBar" style="display:none;">تم بواسطة <a href="#" id="devLink" target="_blank"></a></div>
 
-  <div class="tab-content active" id="tab-mnaobat">
-    <div class="table-wrapper">
-      <table id="mnaobatTable" style="display:none;">
-        <thead id="mnaobatHead"></thead>
-        <tbody id="mnaobatBody"></tbody>
-      </table>
-    </div>
-  </div>
+<script>
+    var settings = {};
+    var allMnaobatRows = [];
+    var allIdariRows = [];
+    var currentViewDay = '';
+    var allUniqueDates = [];
+    var clickedRow = null;
 
-  <div class="tab-content" id="tab-idari">
-    <div class="table-wrapper">
-      <table class="idari-table" id="idariTable" style="display:none;">
-        <thead id="idariHead"></thead>
-        <tbody id="idariBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="footer-bar" id="footerBar" style="display:none;">تم بواسطة <a href="#" id="devLink" target="_blank"></a></div>
-
-  <script>
-    (function() {
-      let settings = {};
-      let mnaobatRows = [];           // بيانات المناوبات الأصلية
-      let currentDisplayDate = new Date(); // التاريخ المعروض في لوحة اليوم
-      let allDatesInTable = [];       // تواريخ موجودة بالجدول
-
-      // ---------- مساعدة ----------
-      function parseDate(str) {
-        if (!str) return null;
-        let d = new Date(str + 'T00:00:00');
-        return isNaN(d.getTime()) ? null : d;
-      }
-
-      function formatDateArabic(d) {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        return d.toLocaleDateString('ar-SA', options);
-      }
-
-      function sameDay(d1, d2) {
-        return d1.getFullYear() === d2.getFullYear() &&
-               d1.getMonth() === d2.getMonth() &&
-               d1.getDate() === d2.getDate();
-      }
-
-      // تجميع أسماء المناوبين لكل سنة في تاريخ محدد
-      function getNamesForDate(targetDate) {
-        const result = { first: [], second: [], third: [], fourth: [] };
-        if (!mnaobatRows.length) return result;
-        for (let row of mnaobatRows) {
-          let d = parseDate(row.dateStr);
-          if (d && sameDay(d, targetDate)) {
-            if (row.first) result.first.push(row.first);
-            if (row.second) result.second.push(row.second);
-            if (row.third) result.third.push(row.third);
-            if (row.fourth) result.fourth.push(row.fourth);
-          }
-        }
-        return result;
-      }
-
-      function updateTodayPanel() {
-        const panel = document.getElementById('todayPanel');
-        if (!panel || mnaobatRows.length === 0) return;
-        panel.style.display = 'flex';
-        document.getElementById('todayDateDisplay').textContent = formatDateArabic(currentDisplayDate);
-
-        const names = getNamesForDate(currentDisplayDate);
-        let allNames = [...names.first, ...names.second, ...names.third, ...names.fourth].filter(n => n && n !== 'راحة');
-        const listDiv = document.getElementById('todayNamesList');
-        if (allNames.length === 0) {
-          listDiv.innerHTML = '<span style="color:#aaa;">لا توجد مناوبات مسجلة</span>';
-        } else {
-          listDiv.innerHTML = allNames.map(n => `<span style="background:#2a2a40;padding:4px 12px;border-radius:20px;">${n}</span>`).join(' ');
-        }
-        highlightTodayRow();
-      }
-
-      // تمييز صف اليوم في جدول المناوبات
-      function highlightTodayRow() {
-        document.querySelectorAll('#mnaobatBody tr').forEach(tr => tr.classList.remove('today-row'));
-        if (!mnaobatRows.length) return;
-        const rows = document.querySelectorAll('#mnaobatBody tr');
-        rows.forEach(tr => {
-          const dateCell = tr.getAttribute('data-date');
-          if (dateCell) {
-            let d = parseDate(dateCell);
-            if (d && sameDay(d, currentDisplayDate)) {
-              tr.classList.add('today-row');
-            }
-          }
-        });
-      }
-
-      // البحث عن اسم وتمييزه
-      function applySearchHighlight(term) {
-        const cleanTerm = term.trim();
-        document.querySelectorAll('.name-stack span').forEach(el => el.classList.remove('highlight-name'));
-        if (cleanTerm === '') return;
-        const lowerTerm = cleanTerm.toLowerCase();
-        document.querySelectorAll('.name-stack span').forEach(span => {
-          if (span.textContent.toLowerCase().includes(lowerTerm)) {
-            span.classList.add('highlight-name');
-          }
-        });
-      }
-
-      // ---------- بناء الجداول ----------
-      function processWorkbook(workbook) {
-        document.getElementById('loadingSpinner').style.display = 'none';
-        document.getElementById('tabNav').style.display = 'flex';
-
-        if (workbook.SheetNames.includes('settings')) {
-          const sh = XLSX.utils.sheet_to_json(workbook.Sheets['settings'], { header: 1 });
-          settings = {};
-          sh.forEach(r => { if (r.length >= 2) settings[String(r[0]).trim()] = String(r[1]).trim(); });
-        }
-        const hosp = settings['اسم_المشفى'] || 'المشفى';
-        document.getElementById('hospitalBadge').textContent = '🏥 ' + hosp;
-        document.getElementById('headerSubtitle').textContent = (settings['الشعبة']||'') + ' · ' + (settings['الشهر_بالعربي']||'') + ' ' + (settings['السنة']||'');
-        document.title = 'جدول المناوبات - ' + hosp;
-        const dev = settings['اسم_المطور'] || '';
-        document.getElementById('devLink').textContent = dev;
-        document.getElementById('devLink').href = 'https://wa.me/' + (settings['رقم_الواتساب']||'').replace(/[^0-9]/g,'');
-        document.getElementById('footerBar').style.display = dev ? 'block' : 'none';
-
-        if (workbook.SheetNames.includes('idari')) renderIdari(XLSX.utils.sheet_to_json(workbook.Sheets['idari'], {header:1}));
-        if (workbook.SheetNames.includes('mnaobat')) renderMnaobat(XLSX.utils.sheet_to_json(workbook.Sheets['mnaobat'], {header:1}));
-      }
-
-      function renderMnaobat(raw) {
-        if (!raw || raw.length < 2) return;
-        const headers = raw[0];
-        mnaobatRows = [];
-        allDatesInTable = [];
-        for (let i = 1; i < raw.length; i++) {
-          const row = {};
-          let has = false;
-          for (let j = 0; j < headers.length; j++) {
-            let val = raw[i][j] != null ? String(raw[i][j]).trim() : '';
-            row[headers[j]] = val;
-            if (val) has = true;
-          }
-          if (has && (row['اليوم'] || row['التاريخ'])) {
-            const dateStr = row['التاريخ'] || '';
-            const dayNum = row['اليوم'] || '';
-            mnaobatRows.push({
-              day: dayNum,
-              dateStr: dateStr,
-              dayName: row['اليوم_بالعربي'] || '',
-              section: row['القسم'] || '',
-              first: row['اولى'] || row['الأولى'] || '',
-              second: row['ثانية'] || row['الثانية'] || '',
-              third: row['ثالثة'] || row['الثالثة'] || '',
-              fourth: row['رابعة'] || row['الرابعة'] || ''
-            });
-            let d = parseDate(dateStr);
-            if (d && !allDatesInTable.some(dd => sameDay(dd, d))) allDatesInTable.push(d);
-          }
-        }
-        allDatesInTable.sort((a,b) => a-b);
-        if (allDatesInTable.length) currentDisplayDate = new Date(allDatesInTable[0]);
-
-        document.getElementById('mnaobatHead').innerHTML = `
-          <tr><th>#</th><th>اليوم</th><th>القسم</th>
-          <th class="year-header year-col-1">🟣 السنة الأولى</th>
-          <th class="year-header year-col-2">🟢 السنة الثانية</th>
-          <th class="year-header year-col-3">🔴 السنة الثالثة</th>
-          <th class="year-header year-col-4">🔵 السنة الرابعة</th></tr>`;
-
-        let html = '', prevDay = '';
-        mnaobatRows.forEach((r, idx) => {
-          let dateObj = parseDate(r.dateStr);
-          let dayType = '';
-          if (dateObj) {
-            let dow = dateObj.getDay();
-            if (dow === 5) dayType = 'friday';
-            else if (dow === 6) dayType = 'saturday';
-          }
-          let rowClass = dayType === 'friday' ? 'row-friday' : (dayType === 'saturday' ? 'row-saturday' : '');
-          let textClass = dayType === 'friday' ? 'friday-text' : (dayType === 'saturday' ? 'saturday-text' : '');
-          let isFirst = (r.day !== prevDay);
-          prevDay = r.day;
-          html += `<tr class="${rowClass}${isFirst?' day-first-row':''}" data-date="${r.dateStr}">`;
-          if (isFirst) {
-            html += `<td class="day-num ${textClass}" rowspan="7">${r.day}</td>`;
-            html += `<td rowspan="7"><span class="day-name ${textClass}">${r.dayName}</span></td>`;
-          }
-          html += `<td class="section-cell">${r.section}</td>`;
-          [r.first, r.second, r.third, r.fourth].forEach(name => {
-            html += '<td><div class="name-stack">';
-            if (!name || name === 'راحة') html += '<span style="color:#5a5a6e;">—</span>';
-            else name.split(/[،,;\-–—]+/).filter(n=>n.trim()).forEach(n=> html += `<span>${n.trim()}</span>`);
-            html += '</div></td>';
-          });
-          html += '</tr>';
-        });
-        document.getElementById('mnaobatBody').innerHTML = html;
-        document.getElementById('mnaobatTable').style.display = 'table';
-        updateTodayPanel();
-        attachRowClick();
-        document.getElementById('searchInput').addEventListener('input', e => applySearchHighlight(e.target.value));
-      }
-
-      function renderIdari(raw) {
-        if (!raw || raw.length < 2) return;
-        const headers = raw[0];
-        let secIdx = 0, map = {};
-        headers.forEach((h,i)=>{
-          let hv = String(h||'').trim();
-          if (hv.includes('قسم')) secIdx = i;
-          if (hv.match(/أولى|الاولى|الأولى/)) map[0]=i;
-          if (hv.match(/ثانية|الثانية/)) map[1]=i;
-          if (hv.match(/ثالثة|الثالثة/)) map[2]=i;
-          if (hv.match(/رابعة|الرابعة/)) map[3]=i;
-        });
-        document.getElementById('idariHead').innerHTML = `
-          <tr><th>القسم</th><th class="year-header year-col-1">🟣 السنة الأولى</th>
-          <th class="year-header year-col-2">🟢 السنة الثانية</th>
-          <th class="year-header year-col-3">🔴 السنة الثالثة</th>
-          <th class="year-header year-col-4">🔵 السنة الرابعة</th></tr>`;
-        let html = '';
-        for (let i=1; i<raw.length; i++) {
-          let sec = String(raw[i][secIdx]||'').trim();
-          if (!sec) continue;
-          html += `<tr><td class="idari-section-cell">${sec}</td>`;
-          for (let y=0; y<4; y++) {
-            let val = map[y]!==undefined ? String(raw[i][map[y]]||'').trim() : '';
-            html += '<td><div class="name-stack">';
-            if (!val) html += '<span style="color:#555;">—</span>';
-            else val.split(/[،,;\-–—]+/).filter(n=>n.trim()).forEach(n=> html += `<span>${n.trim()}</span>`);
-            html += '</div></td>';
-          }
-          html += '</tr>';
-        }
-        document.getElementById('idariBody').innerHTML = html;
-        document.getElementById('idariTable').style.display = 'table';
-      }
-
-      // النقر على صف يجعله محدداً بوضوح
-      function attachRowClick() {
-        document.querySelectorAll('#mnaobatBody tr').forEach(tr => {
-          tr.addEventListener('click', function() {
-            document.querySelectorAll('#mnaobatBody tr').forEach(r => r.classList.remove('selected-row'));
-            this.classList.add('selected-row');
-          });
-        });
-      }
-
-      // أزرار التنقل بين الأيام
-      document.getElementById('prevDayBtn').addEventListener('click', ()=>{
-        if (!allDatesInTable.length) return;
-        let idx = allDatesInTable.findIndex(d => sameDay(d, currentDisplayDate));
-        if (idx > 0) currentDisplayDate = new Date(allDatesInTable[idx-1]);
-        else currentDisplayDate = new Date(allDatesInTable[allDatesInTable.length-1]);
-        updateTodayPanel();
-      });
-      document.getElementById('nextDayBtn').addEventListener('click', ()=>{
-        if (!allDatesInTable.length) return;
-        let idx = allDatesInTable.findIndex(d => sameDay(d, currentDisplayDate));
-        if (idx < allDatesInTable.length-1) currentDisplayDate = new Date(allDatesInTable[idx+1]);
-        else currentDisplayDate = new Date(allDatesInTable[0]);
-        updateTodayPanel();
-      });
-
-      window.switchTab = function(tabId) {
+    function switchTab(tabId) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        document.querySelector('.tab-btn[data-tab="' + tabId + '"]').classList.add('active');
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-      };
+        applySearchHighlight();
+    }
 
-      window.addEventListener('DOMContentLoaded', ()=>{
-        if (typeof XLSX === 'undefined') {
-          setTimeout(()=>{ if(typeof XLSX==='undefined') document.getElementById('loadingSpinner').innerHTML='<p>تعذر تحميل المكتبة</p>'; }, 4000);
-        } else {
-          fetch('./schedule.xlsx')
-            .then(r=>r.arrayBuffer())
-            .then(buf=>{ processWorkbook(XLSX.read(new Uint8Array(buf), {type:'array'})); })
-            .catch(()=>{ document.getElementById('loadingSpinner').style.display='none'; });
+    function parseDateAny(str) {
+        if (!str && str !== 0) return null;
+        if (typeof str === 'number') {
+            var excelEpoch = new Date(1899, 11, 30);
+            var d = new Date(excelEpoch.getTime() + str * 86400000);
+            if (!isNaN(d)) return d;
         }
-      });
-    })();
-  </script>
+        str = String(str).trim();
+        var parts = str.split('-');
+        if (parts.length === 3) {
+            var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            if (!isNaN(d) && d.getFullYear() > 1900) return d;
+        }
+        parts = str.split(/[\/.]/);
+        if (parts.length === 3) {
+            var d1 = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+            if (!isNaN(d1) && d1.getFullYear() > 1900) return d1;
+            var d2 = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            if (!isNaN(d2) && d2.getFullYear() > 1900) return d2;
+        }
+        var d3 = new Date(str);
+        if (!isNaN(d3) && d3.getFullYear() > 1900) return d3;
+        return null;
+    }
+
+    function toISODate(d) {
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function formatDateArabic(d) {
+        var months = ['كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'];
+        var days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        return days[d.getDay()] + '، ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+    }
+
+    function getTodayDateStr() {
+        var t = new Date();
+        return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+    }
+
+    function processWorkbook(workbook) {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        document.getElementById('tabNav').style.display = 'flex';
+        document.getElementById('controlsBar').style.display = 'flex';
+        document.getElementById('todayPanel').style.display = 'flex';
+
+        if (workbook.SheetNames.indexOf('settings') !== -1) {
+            var sh = XLSX.utils.sheet_to_json(workbook.Sheets['settings'], { header: 1 });
+            sh.forEach(r => { if (r.length >= 2) settings[String(r[0]).trim()] = String(r[1]).trim(); });
+        } else {
+            settings = { 'اسم_المشفى': 'المشفى', 'الشعبة': '', 'الشهر_بالعربي': '', 'السنة': '', 'رقم_الواتساب': '', 'اسم_المطور': '' };
+        }
+
+        document.getElementById('hospitalBadge').textContent = '🏥 ' + (settings['اسم_المشفى'] || 'المشفى');
+        document.getElementById('headerSubtitle').textContent = (settings['الشعبة'] || '') + ' · ' + (settings['الشهر_بالعربي'] || '') + ' ' + (settings['السنة'] || '');
+        document.title = 'جدول المناوبات - ' + (settings['اسم_المشفى'] || '');
+        var dev = settings['اسم_المطور'] || '', phone = settings['رقم_الواتساب'] || '';
+        var devLink = document.getElementById('devLink');
+        devLink.textContent = dev;
+        devLink.href = 'https://wa.me/' + phone.replace(/[^0-9]/g, '');
+        document.getElementById('footerBar').style.display = dev ? 'block' : 'none';
+
+        var mnaLoaded = false;
+        if (workbook.SheetNames.indexOf('mnaobat') !== -1) {
+            mnaLoaded = renderMnaobat(XLSX.utils.sheet_to_json(workbook.Sheets['mnaobat'], { header: 1, raw: true }));
+        }
+        if (workbook.SheetNames.indexOf('idari') !== -1) {
+            renderIdari(XLSX.utils.sheet_to_json(workbook.Sheets['idari'], { header: 1 }));
+        }
+        if (mnaLoaded) initTodayPanel();
+        initSearch();
+    }
+
+    function loadSchedule() {
+        fetch('./schedule.xlsx')
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })
+            .then(b => { var wb = XLSX.read(new Uint8Array(b), { type: 'array' }); processWorkbook(wb); })
+            .catch(e => {
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('errorMsg').style.display = 'block';
+                console.error(e);
+            });
+    }
+
+    function findColumnIndex(headers, keywords) {
+        for (var i = 0; i < headers.length; i++) {
+            var h = String(headers[i] || '').trim();
+            for (var k = 0; k < keywords.length; k++) {
+                if (h.indexOf(keywords[k]) !== -1) return i;
+            }
+        }
+        return -1;
+    }
+
+    function renderMnaobat(rawData) {
+        if (!rawData || rawData.length < 2) return false;
+        var headers = rawData[0];
+        var dayIdx = findColumnIndex(headers, ['اليوم']);
+        var dateIdx = findColumnIndex(headers, ['التاريخ', 'date']);
+        var dayNameIdx = findColumnIndex(headers, ['اليوم_بالعربي', 'اليوم بالعربي', 'day']);
+        var sectionIdx = findColumnIndex(headers, ['القسم', 'section', 'شعبة']);
+        var year1Idx = findColumnIndex(headers, ['اولى', 'أولى', 'الأولى', 'الاولى']);
+        var year2Idx = findColumnIndex(headers, ['ثانية', 'الثانية']);
+        var year3Idx = findColumnIndex(headers, ['ثالثة', 'الثالثة']);
+        var year4Idx = findColumnIndex(headers, ['رابعة', 'الرابعة']);
+
+        if (dayIdx === -1) dayIdx = 0;
+        if (dateIdx === -1) dateIdx = 1;
+        if (sectionIdx === -1) sectionIdx = 2;
+        if (year1Idx === -1 && headers.length > 3) year1Idx = 3;
+        if (year2Idx === -1 && headers.length > 4) year2Idx = 4;
+        if (year3Idx === -1 && headers.length > 5) year3Idx = 5;
+        if (year4Idx === -1 && headers.length > 6) year4Idx = 6;
+
+        allMnaobatRows = [];
+        for (var i = 1; i < rawData.length; i++) {
+            var row = rawData[i];
+            var dayVal = row[dayIdx] !== undefined ? String(row[dayIdx] || '').trim() : '';
+            var dateVal = row[dateIdx];
+            if (!dayVal && !dateVal && dateVal !== 0) continue;
+            var obj = {
+                'اليوم': dayVal,
+                'التاريخ': dateVal,
+                'اليوم_بالعربي': row[dayNameIdx] !== undefined ? String(row[dayNameIdx] || '').trim() : '',
+                'القسم': row[sectionIdx] !== undefined ? String(row[sectionIdx] || '').trim() : '',
+                'اولى': row[year1Idx] !== undefined ? String(row[year1Idx] || '').trim() : '',
+                'ثانية': row[year2Idx] !== undefined ? String(row[year2Idx] || '').trim() : '',
+                'ثالثة': row[year3Idx] !== undefined ? String(row[year3Idx] || '').trim() : '',
+                'رابعة': row[year4Idx] !== undefined ? String(row[year4Idx] || '').trim() : ''
+            };
+            allMnaobatRows.push(obj);
+        }
+        if (allMnaobatRows.length === 0) return false;
+
+        var dateSet = {};
+        allMnaobatRows.forEach(r => {
+            var d = parseDateAny(r['التاريخ']);
+            if (d) {
+                var iso = toISODate(d);
+                r['_isodate'] = iso;
+                dateSet[iso] = true;
+            } else {
+                r['_isodate'] = String(r['التاريخ']).trim();
+                dateSet[r['_isodate']] = true;
+            }
+        });
+        allUniqueDates = Object.keys(dateSet).sort();
+
+        document.getElementById('mnaobatHead').innerHTML =
+            '<tr>' +
+            '<th class="corner-cell">#</th>' +
+            '<th>اليوم</th>' +
+            '<th>القسم</th>' +
+            '<th class="year-header year-col-1">🟣 السنة الأولى</th>' +
+            '<th class="year-header year-col-2">🟢 السنة الثانية</th>' +
+            '<th class="year-header year-col-3">🔴 السنة الثالثة</th>' +
+            '<th class="year-header year-col-4">🔵 السنة الرابعة</th>' +
+            '</tr>';
+        rebuildMnaobatTableBody();
+        document.getElementById('mnaobatTable').style.display = 'table';
+        return true;
+    }
+
+    function rebuildMnaobatTableBody() {
+        var todayIso = getTodayDateStr();
+        var bodyHTML = '';
+        var dayGroups = {}, dayOrder = [];
+        allMnaobatRows.forEach((r, idx) => {
+            var dayKey = r['اليوم'] || r['_isodate'] || '';
+            if (!dayGroups[dayKey]) { dayGroups[dayKey] = []; dayOrder.push(dayKey); }
+            dayGroups[dayKey].push({ row: r, idx: idx });
+        });
+        var dayGroupIdx = 0;
+        dayOrder.forEach(dayKey => {
+            var rows = dayGroups[dayKey];
+            var rs = rows.length;
+            dayGroupIdx++;
+            var first = true;
+            rows.forEach(item => {
+                var r = item.row, idx = item.idx;
+                var iso = r['_isodate'] || String(r['التاريخ']);
+                var isToday = (iso === todayIso);
+                var dayType = 'normal';
+                var d = parseDateAny(r['التاريخ']);
+                if (d) { var dow = d.getDay(); if (dow === 5) dayType = 'friday'; if (dow === 6) dayType = 'saturday'; }
+                var cls = [];
+                if (dayType === 'friday') cls.push('row-friday');
+                else if (dayType === 'saturday') cls.push('row-saturday');
+                if (isToday) cls.push('row-today');
+                if (first) cls.push('day-first-row');
+                var tClass = (dayType === 'friday') ? 'friday-text' : (dayType === 'saturday') ? 'saturday-text' : '';
+                bodyHTML += '<tr id="mnaobat-row-' + idx + '" class="' + cls.join(' ') + '" data-row-index="' + idx + '" data-date="' + iso + '" data-day-group="' + dayGroupIdx + '" onclick="handleMnaobatRowClick(this)">';
+                if (first) {
+                    bodyHTML += '<td class="day-num ' + tClass + '" id="daynum-' + dayGroupIdx + '" rowspan="' + rs + '">' + (r['اليوم'] || '') + '</td>';
+                    bodyHTML += '<td id="dayname-' + dayGroupIdx + '" rowspan="' + rs + '"><span class="day-name ' + tClass + '">' + (r['اليوم_بالعربي'] || '') + '</span></td>';
+                }
+                bodyHTML += '<td class="section-name-cell">' + r['القسم'] + '</td>';
+                var years = ['اولى', 'ثانية', 'ثالثة', 'رابعة'];
+                for (var y = 0; y < 4; y++) {
+                    bodyHTML += '<td><div class="name-stack">';
+                    var names = r[years[y]] || '';
+                    if (!names || names === 'راحة') bodyHTML += '<span class="rest-note">—</span>';
+                    else {
+                        names.split(/[،,;\-–—]+/).filter(n => n.trim()).forEach(n => {
+                            bodyHTML += '<span class="student-name">' + n.trim() + '</span>';
+                        });
+                    }
+                    bodyHTML += '</div></td>';
+                }
+                bodyHTML += '</tr>';
+                first = false;
+            });
+        });
+        document.getElementById('mnaobatBody').innerHTML = bodyHTML;
+        applySearchHighlight();
+    }
+
+    function handleMnaobatRowClick(tr) {
+        if (clickedRow && clickedRow !== tr) {
+            clickedRow.classList.remove('row-clicked');
+            removeAllClickedHighlights();
+        }
+        if (clickedRow === tr) {
+            tr.classList.remove('row-clicked');
+            removeAllClickedHighlights();
+            clickedRow = null;
+            return;
+        }
+        tr.classList.add('row-clicked');
+        clickedRow = tr;
+        var g = tr.getAttribute('data-day-group');
+        if (g) {
+            var dn = document.getElementById('daynum-' + g);
+            var dnm = document.getElementById('dayname-' + g);
+            if (dn) dn.classList.add('clicked-highlight');
+            if (dnm) dnm.classList.add('clicked-highlight-dayname');
+        }
+    }
+
+    function removeAllClickedHighlights() {
+        document.querySelectorAll('td.day-num.clicked-highlight').forEach(td => td.classList.remove('clicked-highlight'));
+        document.querySelectorAll('td.clicked-highlight-dayname').forEach(td => td.classList.remove('clicked-highlight-dayname'));
+    }
+
+    function handleIdariRowClick(tr) {
+        if (clickedRow && clickedRow !== tr) {
+            clickedRow.classList.remove('row-clicked');
+            removeAllClickedHighlights();
+        }
+        if (clickedRow === tr) {
+            tr.classList.remove('row-clicked');
+            removeAllClickedHighlights();
+            clickedRow = null;
+            return;
+        }
+        tr.classList.add('row-clicked');
+        clickedRow = tr;
+    }
+
+    function renderIdari(rawData) {
+        if (!rawData || rawData.length < 2) return;
+        var headers = rawData[0];
+        var secIdx = findColumnIndex(headers, ['القسم', 'القسم_الثابت', 'قسم', 'section']);
+        var y1 = findColumnIndex(headers, ['أولى', 'الاولى', 'الأولى']);
+        var y2 = findColumnIndex(headers, ['ثانية', 'الثانية']);
+        var y3 = findColumnIndex(headers, ['ثالثة', 'الثالثة']);
+        var y4 = findColumnIndex(headers, ['رابعة', 'الرابعة']);
+        if (secIdx === -1) secIdx = 0;
+        if (y1 === -1 && headers.length > 1) y1 = 1;
+        if (y2 === -1 && headers.length > 2) y2 = 2;
+        if (y3 === -1 && headers.length > 3) y3 = 3;
+        if (y4 === -1 && headers.length > 4) y4 = 4;
+        allIdariRows = [];
+        for (var i = 1; i < rawData.length; i++) {
+            var sec = rawData[i][secIdx] !== undefined ? String(rawData[i][secIdx] || '').trim() : '';
+            if (!sec) continue;
+            var obj = { '_section': sec };
+            obj['_year0'] = rawData[i][y1] !== undefined ? String(rawData[i][y1] || '').trim() : '';
+            obj['_year1'] = rawData[i][y2] !== undefined ? String(rawData[i][y2] || '').trim() : '';
+            obj['_year2'] = rawData[i][y3] !== undefined ? String(rawData[i][y3] || '').trim() : '';
+            obj['_year3'] = rawData[i][y4] !== undefined ? String(rawData[i][y4] || '').trim() : '';
+            allIdariRows.push(obj);
+        }
+        if (allIdariRows.length === 0) return;
+        document.getElementById('idariHead').innerHTML =
+            '<tr><th class="corner-cell">القسم</th>' +
+            '<th class="year-header year-col-1">🟣 السنة الأولى</th>' +
+            '<th class="year-header year-col-2">🟢 السنة الثانية</th>' +
+            '<th class="year-header year-col-3">🔴 السنة الثالثة</th>' +
+            '<th class="year-header year-col-4">🔵 السنة الرابعة</th></tr>';
+        rebuildIdariTableBody();
+        document.getElementById('idariTable').style.display = 'table';
+    }
+
+    function rebuildIdariTableBody() {
+        var html = '';
+        allIdariRows.forEach((r, idx) => {
+            html += '<tr id="idari-row-' + idx + '" onclick="handleIdariRowClick(this)" style="cursor:pointer;">';
+            html += '<td class="section-header-cell">' + r['_section'] + '</td>';
+            for (var y = 0; y < 4; y++) {
+                html += '<td><div class="name-stack">';
+                var names = r['_year' + y] || '';
+                if (!names) html += '<span style="color:#555;">—</span>';
+                else names.split(/[،,;\-–—]+/).filter(n => n.trim()).forEach(n => html += '<span class="student-name">' + n.trim() + '</span>');
+                html += '</div></td>';
+            }
+            html += '</tr>';
+        });
+        document.getElementById('idariBody').innerHTML = html;
+        applySearchHighlight();
+    }
+
+    function initTodayPanel() {
+        if (allUniqueDates.length === 0) {
+            document.getElementById('todayDateDisplay').textContent = 'لا توجد بيانات';
+            document.getElementById('todaySectionsContainer').innerHTML = '<div class="today-empty">—</div>';
+            document.getElementById('prevDayBtn').disabled = true;
+            document.getElementById('nextDayBtn').disabled = true;
+            return;
+        }
+        var today = getTodayDateStr();
+        if (allUniqueDates.indexOf(today) === -1) today = allUniqueDates[0];
+        currentViewDay = today;
+        updateTodayPanel();
+        document.getElementById('prevDayBtn').onclick = () => navigateTodayPanel(-1);
+        document.getElementById('nextDayBtn').onclick = () => navigateTodayPanel(1);
+
+        document.getElementById('todaySectionsContainer').addEventListener('click', function(e) {
+            var section = e.target.closest('.today-section');
+            if (!section) return;
+            this.querySelectorAll('.today-section-active').forEach(s => s.classList.remove('today-section-active'));
+            section.classList.add('today-section-active');
+        });
+    }
+
+    function navigateTodayPanel(dir) {
+        var idx = allUniqueDates.indexOf(currentViewDay);
+        if (idx === -1) idx = 0;
+        var newIdx = idx + dir;
+        if (newIdx < 0 || newIdx >= allUniqueDates.length) return;
+        currentViewDay = allUniqueDates[newIdx];
+        updateTodayPanel();
+    }
+
+    function updateTodayPanel() {
+        var d = parseDateAny(currentViewDay);
+        document.getElementById('todayDateDisplay').textContent = 'مناوبين يوم ' + (d ? formatDateArabic(d) : currentViewDay);
+        var sectionsMap = {}, sectionsOrder = [];
+        allMnaobatRows.forEach(r => {
+            if (r['_isodate'] === currentViewDay || String(r['التاريخ']) === currentViewDay) {
+                var sec = r['القسم'] || 'بدون قسم';
+                if (!sectionsMap[sec]) { sectionsMap[sec] = { 'اولى': [], 'ثانية': [], 'ثالثة': [], 'رابعة': [] }; sectionsOrder.push(sec); }
+                ['اولى', 'ثانية', 'ثالثة', 'رابعة'].forEach(year => {
+                    var val = r[year] || '';
+                    if (val && val !== 'راحة') {
+                        val.split(/[،,;\-–—]+/).forEach(n => {
+                            var name = n.trim();
+                            if (name && sectionsMap[sec][year].indexOf(name) === -1) sectionsMap[sec][year].push(name);
+                        });
+                    }
+                });
+            }
+        });
+        var container = document.getElementById('todaySectionsContainer');
+        if (sectionsOrder.length === 0) {
+            container.innerHTML = '<div class="today-empty">لا توجد مناوبات لهذا اليوم</div>';
+        } else {
+            var html = '';
+            sectionsOrder.forEach(sec => {
+                var data = sectionsMap[sec];
+                html += '<div class="today-section"><div class="today-section-title">' + sec + '</div><div class="today-years">';
+                var yearLabels = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة'];
+                var yearKeys = ['اولى', 'ثانية', 'ثالثة', 'رابعة'];
+                for (var i = 0; i < 4; i++) {
+                    var names = data[yearKeys[i]];
+                    html += '<div class="today-year-group">';
+                    html += '<span class="today-year-label">' + yearLabels[i] + ':</span>';
+                    html += '<span class="today-year-names">';
+                    if (names.length > 0) {
+                        html += names.map(function(name) {
+                            return '<span class="student-name">' + name + '</span>';
+                        }).join('<span>, </span>');
+                    } else {
+                        html += '<span class="student-name" style="color:#555;">—</span>';
+                    }
+                    html += '</span></div>';
+                }
+                html += '</div></div>';
+            });
+            container.innerHTML = html;
+        }
+        var idx = allUniqueDates.indexOf(currentViewDay);
+        document.getElementById('prevDayBtn').disabled = (idx <= 0);
+        document.getElementById('nextDayBtn').disabled = (idx >= allUniqueDates.length - 1);
+        document.querySelectorAll('#mnaobatBody tr.row-today').forEach(tr => tr.classList.remove('row-today'));
+        document.querySelectorAll('#mnaobatBody tr[data-date="' + currentViewDay + '"]').forEach(tr => tr.classList.add('row-today'));
+        applySearchHighlight();
+    }
+
+    function initSearch() {
+        var inp = document.getElementById('searchInput');
+        var clr = document.getElementById('clearSearchBtn');
+        inp.addEventListener('input', () => { clr.classList.toggle('visible', inp.value.trim().length > 0); applySearchHighlight(); });
+        clr.addEventListener('click', () => { inp.value = ''; clr.classList.remove('visible'); applySearchHighlight(); inp.focus(); });
+
+        inp.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                inp.blur();
+                // البحث عن أول highlight-name في كامل الصفحة (بما في ذلك لوحة اليوم)
+                var firstHighlight = document.querySelector('.highlight-name');
+                if (firstHighlight) {
+                    firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+    }
+
+    function applySearchHighlight() {
+        var term = document.getElementById('searchInput').value.trim();
+        document.querySelectorAll('.highlight-name').forEach(el => {
+            el.outerHTML = el.textContent;
+        });
+        if (!term) return;
+        document.querySelectorAll('.student-name').forEach(span => {
+            var txt = span.textContent;
+            if (txt.indexOf(term) !== -1) {
+                var re = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                span.innerHTML = txt.replace(re, '<span class="highlight-name">$1</span>');
+            }
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (typeof XLSX === 'undefined') {
+            var iv = setInterval(() => { if (typeof XLSX !== 'undefined') { clearInterval(iv); loadSchedule(); } }, 200);
+            setTimeout(() => { clearInterval(iv); document.getElementById('loadingSpinner').style.display = 'none'; document.getElementById('errorMsg').style.display = 'block'; }, 10000);
+        } else loadSchedule();
+    });
+</script>
 </body>
 </html>
