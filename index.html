@@ -36,6 +36,11 @@
             --clicked-bg: rgba(255, 255, 255, 0.14);
             --clicked-shadow: 0 0 22px rgba(255, 255, 255, 0.3);
             --clicked-border: rgba(255, 255, 255, 0.7);
+            --summary-col-bg: rgba(201, 160, 80, 0.08);
+            --stat-col-even: rgba(255, 255, 255, 0.015);
+            --stat-col-odd: rgba(255, 255, 255, 0.04);
+            --stat-col-summary: rgba(201, 160, 80, 0.1);
+            --weekend-stats-bg: rgba(100, 140, 180, 0.1);
         }
 
         * {
@@ -115,12 +120,8 @@
         }
 
         @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .loading-spinner p {
@@ -139,20 +140,9 @@
             display: none;
         }
 
-        .error-msg .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .error-msg p {
-            color: #e08888;
-            margin-bottom: 6px;
-        }
-
-        .error-msg .hint {
-            color: var(--text-muted);
-            font-size: 0.8em;
-        }
+        .error-msg .icon { font-size: 48px; margin-bottom: 12px; }
+        .error-msg p { color: #e08888; margin-bottom: 6px; }
+        .error-msg .hint { color: var(--text-muted); font-size: 0.8em; }
 
         .controls-bar {
             display: flex;
@@ -215,42 +205,100 @@
             line-height: 1;
         }
 
-        .clear-search.visible {
-            display: block;
+        .clear-search.visible { display: block; }
+        .clear-search:hover { color: #fff; }
+
+        .tab-nav {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 40px;
+            padding: 6px;
+            max-width: 600px;
+            border: 1px solid var(--border);
+            z-index: 1;
         }
 
-        .clear-search:hover {
-            color: #fff;
+        .tab-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 35px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 500;
+            transition: var(--transition);
+            font-family: var(--font);
+            white-space: nowrap;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
-        .today-panel {
+        .tab-btn:hover {
+            color: var(--text-bright);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-btn.active {
+            background: var(--surface2);
+            color: var(--gold-light);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .tab-icon { font-size: 1.15em; flex-shrink: 0; }
+        .tab-text { overflow: hidden; text-overflow: ellipsis; }
+
+        .tab-content {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+
+        .tab-content.active { display: block; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .today-panel-wrapper {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 16px 20px;
-            margin: 8px auto 16px;
+            padding: 20px;
+            margin: 16px auto;
             max-width: 800px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 14px;
-            flex-wrap: wrap;
             box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+        }
+
+        .today-nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .today-nav-btn {
             background: var(--surface2);
             border: 1px solid var(--border);
             color: var(--gold-light);
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 25px;
             cursor: pointer;
             font-family: var(--font);
-            font-size: 0.85em;
+            font-size: 0.9em;
             font-weight: 600;
             transition: var(--transition);
             white-space: nowrap;
-            align-self: center;
+            min-width: 100px;
         }
 
         .today-nav-btn:hover {
@@ -259,17 +307,7 @@
             border-color: var(--gold);
         }
 
-        .today-nav-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .today-info {
-            text-align: right;
-            flex: 1;
-            min-width: 200px;
-        }
+        .today-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
         .today-date-big {
             font-size: 1.3em;
@@ -277,27 +315,24 @@
             color: var(--gold-light);
             letter-spacing: 1px;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
+            padding: 0 10px;
         }
+
+        .today-info { text-align: right; }
 
         .today-section {
             margin-bottom: 12px;
             background: var(--surface2);
             border-radius: 10px;
-            padding: 10px 14px;
+            padding: 12px 16px;
             border: 1px solid var(--border);
             cursor: pointer;
             transition: background 0.2s;
         }
 
-        .today-section:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .today-section-active {
-            background: rgba(201, 160, 80, 0.2) !important;
-            border-color: var(--gold);
-        }
+        .today-section:hover { background: rgba(255, 255, 255, 0.05); }
+        .today-section-active { background: rgba(201, 160, 80, 0.2) !important; border-color: var(--gold); }
 
         .today-section-title {
             font-weight: 700;
@@ -319,91 +354,15 @@
             flex-wrap: wrap;
         }
 
-        .today-year-label {
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.9em;
-            white-space: nowrap;
-        }
-
-        .today-year-names {
-            color: var(--text-bright);
-            font-size: 0.9em;
-        }
-
-        .today-year-names .student-name {
-            color: inherit;
-        }
+        .today-year-label { color: var(--text-muted); font-weight: 600; font-size: 0.9em; white-space: nowrap; }
+        .today-year-names { color: var(--text-bright); font-size: 0.9em; }
+        .today-year-names .student-name { color: inherit; }
 
         .today-empty {
             color: var(--text-muted);
             font-style: italic;
             font-size: 0.9em;
             text-align: center;
-        }
-
-        .tab-nav {
-            display: flex;
-            gap: 4px;
-            justify-content: center;
-            margin: 24px auto 0;
-            background: var(--surface);
-            border-radius: 40px;
-            padding: 5px;
-            max-width: 500px;
-            border: 1px solid var(--border);
-            z-index: 1;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            border-radius: 35px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 500;
-            transition: var(--transition);
-            font-family: var(--font);
-            white-space: nowrap;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-bright);
-        }
-
-        .tab-btn.active {
-            background: var(--surface2);
-            color: var(--gold-light);
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        .tab-icon {
-            margin-left: 5px;
-            font-size: 1.1em;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeSlideIn 0.4s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .table-wrapper {
@@ -417,9 +376,7 @@
             max-height: 75vh;
         }
 
-        .table-wrapper.idari-wrapper {
-            max-height: none;
-        }
+        .table-wrapper.idari-wrapper { max-height: none; }
 
         table.mnaobat-table {
             width: 100%;
@@ -429,42 +386,23 @@
         }
 
         table.mnaobat-table thead th:first-child,
-        table.mnaobat-table tbody td:first-child {
-            width: 35px;
-            min-width: 35px;
-            padding: 8px 2px;
-        }
+        table.mnaobat-table tbody td:first-child { width: 35px; min-width: 35px; padding: 8px 2px; }
 
         table.mnaobat-table thead th:nth-child(2),
-        table.mnaobat-table tbody td:nth-child(2) {
-            width: 60px;
-            min-width: 60px;
-            padding: 8px 2px;
-        }
+        table.mnaobat-table tbody td:nth-child(2) { width: 60px; min-width: 60px; padding: 8px 2px; }
 
         table.mnaobat-table thead th:nth-child(3),
-        table.mnaobat-table tbody td:nth-child(3) {
-            width: 70px;
-            min-width: 70px;
-            padding: 8px 4px;
-        }
+        table.mnaobat-table tbody td:nth-child(3) { width: 70px; min-width: 70px; padding: 8px 4px; }
 
         table.mnaobat-table thead th:nth-child(4),
         table.mnaobat-table thead th:nth-child(5),
         table.mnaobat-table thead th:nth-child(6),
-        table.mnaobat-table thead th:nth-child(7) {
-            width: auto;
-            padding: 6px 4px;
-            white-space: nowrap;
-        }
+        table.mnaobat-table thead th:nth-child(7) { width: auto; padding: 6px 4px; white-space: nowrap; }
 
         table.mnaobat-table tbody td:nth-child(4),
         table.mnaobat-table tbody td:nth-child(5),
         table.mnaobat-table tbody td:nth-child(6),
-        table.mnaobat-table tbody td:nth-child(7) {
-            padding: 6px 4px;
-            white-space: nowrap;
-        }
+        table.mnaobat-table tbody td:nth-child(7) { padding: 6px 4px; white-space: nowrap; }
 
         tr.row-friday.row-clicked td {
             background: rgba(255, 255, 255, 0.18) !important;
@@ -513,34 +451,12 @@
             white-space: nowrap;
         }
 
-        thead th.corner-cell {
-            border-radius: 0 var(--radius-sm) 0 0;
-        }
-
-        thead th.year-header {
-            border-bottom: 3px solid var(--gold);
-            font-size: 0.95em;
-        }
-
-        thead th.year-col-1 {
-            border-bottom-color: var(--accent1);
-            color: #b8b0ff;
-        }
-
-        thead th.year-col-2 {
-            border-bottom-color: var(--accent2);
-            color: #60e0c8;
-        }
-
-        thead th.year-col-3 {
-            border-bottom-color: var(--accent3);
-            color: #ffa098;
-        }
-
-        thead th.year-col-4 {
-            border-bottom-color: var(--accent4);
-            color: #80c4ff;
-        }
+        thead th.corner-cell { border-radius: 0 var(--radius-sm) 0 0; }
+        thead th.year-header { border-bottom: 3px solid var(--gold); font-size: 0.95em; }
+        thead th.year-col-1 { border-bottom-color: var(--accent1); color: #b8b0ff; }
+        thead th.year-col-2 { border-bottom-color: var(--accent2); color: #60e0c8; }
+        thead th.year-col-3 { border-bottom-color: var(--accent3); color: #ffa098; }
+        thead th.year-col-4 { border-bottom-color: var(--accent4); color: #80c4ff; }
 
         tbody td {
             padding: 6px 4px;
@@ -553,28 +469,17 @@
             white-space: normal;
         }
 
-        .section-name-cell,
-        .day-num,
-        .day-name {
-            white-space: nowrap;
-        }
+        .section-name-cell, .day-num, .day-name { white-space: nowrap; }
 
-        tr.row-friday td {
-            background: var(--friday-bg) !important;
-        }
-
-        tr.row-saturday td {
-            background: var(--saturday-bg) !important;
-        }
+        tr.row-friday td { background: var(--friday-bg) !important; }
+        tr.row-saturday td { background: var(--saturday-bg) !important; }
 
         tr.row-today td {
             background: var(--today-bg) !important;
             box-shadow: inset 0 0 20px rgba(77, 166, 255, 0.15);
         }
 
-        tr.row-today td:first-of-type {
-            border-right: 3px solid var(--today-border);
-        }
+        tr.row-today td:first-of-type { border-right: 3px solid var(--today-border); }
 
         tr.row-clicked td {
             background: var(--clicked-bg) !important;
@@ -601,25 +506,10 @@
             display: inline-block;
         }
 
-        .day-num {
-            font-weight: 700;
-            font-size: 1.1em;
-            color: var(--text-bright);
-        }
-
-        .day-name {
-            font-size: 0.8em;
-            color: var(--text-muted);
-            display: block;
-        }
-
-        .friday-text {
-            color: #e0a040 !important;
-        }
-
-        .saturday-text {
-            color: #80b8e0 !important;
-        }
+        .day-num { font-weight: 700; font-size: 1.1em; color: var(--text-bright); }
+        .day-name { font-size: 0.8em; color: var(--text-muted); display: block; }
+        .friday-text { color: #e0a040 !important; }
+        .saturday-text { color: #80b8e0 !important; }
 
         .section-name-cell {
             font-weight: 600;
@@ -637,9 +527,7 @@
         }
 
         #mnaobatTable .name-stack span,
-        #idariTable .name-stack span {
-            font-size: 1.15em;
-        }
+        #idariTable .name-stack span { font-size: 1.15em; }
 
         .name-stack span {
             display: block;
@@ -648,11 +536,7 @@
             white-space: nowrap;
         }
 
-        .name-stack .rest-note {
-            color: #5a5a6e;
-            font-style: italic;
-            font-size: 0.85em;
-        }
+        .name-stack .rest-note { color: #5a5a6e; font-style: italic; font-size: 0.85em; }
 
         .section-header-cell {
             font-weight: 700 !important;
@@ -670,6 +554,281 @@
             color: var(--gold);
             font-size: 0.65em;
             vertical-align: middle;
+        }
+
+        /* =============== أنماط صفحة الإحصائيات =============== */
+        .stats-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stats-search-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+        }
+
+        .stats-search-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stats-search-container {
+            position: relative;
+            flex: 1 1 260px;
+            min-width: 200px;
+        }
+
+        .stats-search-container input {
+            width: 100%;
+            padding: 12px 40px 12px 14px;
+            border-radius: 28px;
+            border: 2px solid var(--border);
+            background: var(--surface2);
+            color: var(--text-bright);
+            font-family: var(--font);
+            font-size: 0.9em;
+            transition: var(--transition);
+            outline: none;
+            direction: rtl;
+        }
+
+        .stats-search-container input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 16px rgba(201, 160, 80, 0.25);
+        }
+
+        .stats-search-container .search-icon {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1em;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-top: 3px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .autocomplete-dropdown.show { display: block; }
+
+        .autocomplete-item {
+            padding: 9px 14px;
+            cursor: pointer;
+            color: var(--text);
+            transition: background 0.15s;
+            font-size: 0.88em;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.active {
+            background: rgba(201, 160, 80, 0.2);
+            color: var(--gold-light);
+        }
+
+        .selected-names-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .selected-name-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(201, 160, 80, 0.15);
+            border: 1px solid rgba(201, 160, 80, 0.3);
+            color: var(--gold-light);
+            padding: 5px 10px 5px 6px;
+            border-radius: 20px;
+            font-size: 0.82em;
+            font-weight: 500;
+        }
+
+        .selected-name-tag .remove-tag {
+            cursor: pointer;
+            font-size: 1.1em;
+            line-height: 1;
+            color: var(--text-muted);
+            transition: color 0.2s;
+            padding: 0 2px;
+        }
+
+        .selected-name-tag .remove-tag:hover { color: #f07167; }
+
+        .stats-year-select {
+            padding: 11px 16px;
+            border-radius: 28px;
+            border: 2px solid var(--border);
+            background: var(--surface2);
+            color: var(--text-bright);
+            font-family: var(--font);
+            font-size: 0.88em;
+            cursor: pointer;
+            outline: none;
+            min-width: 135px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .stats-year-select:focus { border-color: var(--gold); }
+        .stats-year-select option { background: var(--surface2); color: var(--text-bright); }
+
+        .stats-result-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+            display: none;
+        }
+
+        .stats-result-card.show {
+            display: block;
+            animation: fadeSlideIn 0.4s ease;
+        }
+
+        .stats-card-title {
+            font-size: 1.05em;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stats-card-title .icon { font-size: 1.15em; }
+
+        .stats-table-wrapper {
+            overflow-x: auto;
+            margin: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.83em;
+            min-width: 400px;
+        }
+
+        .stats-table thead th {
+            padding: 10px 9px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--gold-light);
+            border-bottom: 2px solid var(--gold-dark);
+            font-size: 0.86em;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .stats-table thead th.col-name { background: var(--surface2); }
+        .stats-table thead th.col-even { background: rgba(255, 255, 255, 0.03); }
+        .stats-table thead th.col-odd { background: rgba(255, 255, 255, 0.06); }
+        .stats-table thead th.col-summary { background: var(--stat-col-summary); color: #f0d78c; }
+        .stats-table thead th.col-separator { border-right: 2px solid rgba(255, 255, 255, 0.15); }
+
+        .stats-table tbody td {
+            padding: 9px 9px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-bright);
+            white-space: nowrap;
+        }
+
+        .stats-table tbody td.col-name { background: transparent; }
+        .stats-table tbody td.col-even { background: var(--stat-col-even); }
+        .stats-table tbody td.col-odd { background: var(--stat-col-odd); }
+        .stats-table tbody td.col-summary { background: var(--stat-col-summary); font-weight: 700; }
+        .stats-table tbody td.col-separator { border-right: 2px solid rgba(255, 255, 255, 0.1); }
+
+        .stats-table tbody tr:hover td.col-even { background: rgba(255, 255, 255, 0.04); }
+        .stats-table tbody tr:hover td.col-odd { background: rgba(255, 255, 255, 0.07); }
+        .stats-table tbody tr:hover td.col-summary { background: rgba(201, 160, 80, 0.18); }
+
+        /* صفوف نهاية الأسبوع في جدول مناوباتي - نفس اللون الأزرق الفاتح للجمعة والسبت */
+        .stats-table tbody tr.row-weekend-stats td {
+            background: var(--weekend-stats-bg) !important;
+        }
+        .stats-table tbody tr.row-weekend-stats td.col-even {
+            background: var(--weekend-stats-bg) !important;
+        }
+        .stats-table tbody tr.row-weekend-stats td.col-odd {
+            background: rgba(100, 140, 180, 0.13) !important;
+        }
+        .stats-table tbody tr.row-weekend-stats:hover td {
+            background: rgba(100, 140, 180, 0.16) !important;
+        }
+        .stats-table tbody tr.row-weekend-stats:hover td.col-even {
+            background: rgba(100, 140, 180, 0.14) !important;
+        }
+        .stats-table tbody tr.row-weekend-stats:hover td.col-odd {
+            background: rgba(100, 140, 180, 0.19) !important;
+        }
+
+        .stats-name-cell {
+            color: var(--gold-light) !important;
+            font-weight: 700 !important;
+            white-space: nowrap !important;
+            text-align: right !important;
+            padding-right: 10px !important;
+        }
+
+        .stats-highlight {
+            color: var(--gold-light);
+            font-weight: 700;
+        }
+
+        .stats-badge {
+            display: inline-block;
+            padding: 4px 11px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .stats-badge-0 { background: rgba(124, 111, 247, 0.2); color: #b8b0ff; }
+        .stats-badge-1 { background: rgba(0, 196, 154, 0.2); color: #60e0c8; }
+        .stats-badge-2 { background: rgba(240, 113, 103, 0.2); color: #ffa098; }
+        .stats-badge-3 { background: rgba(77, 166, 255, 0.2); color: #80c4ff; }
+        .stats-badge-4 { background: rgba(255, 183, 77, 0.2); color: #ffb74d; }
+        .stats-badge-5 { background: rgba(206, 147, 216, 0.2); color: #ce93d8; }
+        .stats-badge-6 { background: rgba(128, 203, 196, 0.2); color: #80cbc4; }
+
+        .stats-no-data {
+            text-align: center;
+            padding: 18px;
+            color: var(--text-muted);
+            font-size: 0.88em;
         }
 
         .footer-bar {
@@ -693,98 +852,47 @@
         }
 
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.4em;
-            }
-            .tab-nav {
-                max-width: 100%;
-                border-radius: 30px;
-            }
-            .tab-btn {
-                padding: 10px 12px;
-                font-size: 0.75em;
-            }
-            table {
-                font-size: 0.7em;
-            }
-            .today-panel {
-                flex-direction: column;
-                align-items: center;
-            }
-            .today-nav-btn {
-                align-self: stretch;
-                text-align: center;
-            }
+            .header h1 { font-size: 1.4em; }
+            .tab-nav { max-width: 100%; border-radius: 30px; gap: 3px; padding: 4px; }
+            .tab-btn { padding: 8px 6px; font-size: 0.68em; gap: 3px; }
+            .tab-icon { font-size: 1em; }
+            table { font-size: 0.7em; }
+            .today-nav-row { gap: 8px; }
+            .today-nav-btn { padding: 8px 14px; font-size: 0.8em; min-width: 80px; }
+            .stats-search-row { flex-direction: column; gap: 8px; }
+            .stats-search-container { width: 100%; flex: auto; }
+            .stats-year-select { width: 100%; }
+            .stats-table { font-size: 0.73em; }
+            .stats-table thead th,
+            .stats-table tbody td { padding: 7px 5px; }
         }
 
-        .table-wrapper::-webkit-scrollbar {
-            height: 6px;
-            width: 6px;
-        }
+        .table-wrapper::-webkit-scrollbar { height: 6px; width: 6px; }
+        .table-wrapper::-webkit-scrollbar-track { background: var(--surface); border-radius: 8px; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 8px; }
+        .table-wrapper::-webkit-scrollbar-thumb:hover { background: var(--gold-dark); }
 
-        .table-wrapper::-webkit-scrollbar-track {
-            background: var(--surface);
-            border-radius: 8px;
-        }
+        .stats-table-wrapper::-webkit-scrollbar { height: 5px; }
+        .stats-table-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .stats-table-wrapper::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.06); border-radius: 6px; }
 
-        .table-wrapper::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-        }
-
-        .table-wrapper::-webkit-scrollbar-thumb:hover {
-            background: var(--gold-dark);
-        }
+        .autocomplete-dropdown::-webkit-scrollbar { width: 4px; }
+        .autocomplete-dropdown::-webkit-scrollbar-track { background: transparent; }
+        .autocomplete-dropdown::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
 
         @media print {
-            body {
-                background: #fff !important;
-                color: #111 !important;
-                font-size: 10px;
-            }
-            .tab-nav,
-            .footer-bar,
-            .header-badge,
-            .loading-spinner,
-            .error-msg,
-            .controls-bar,
-            .today-panel {
-                display: none !important;
-            }
-            .tab-content {
-                display: block !important;
-            }
-            .tab-content:not(.active) {
-                display: none !important;
-            }
-            .table-wrapper {
-                box-shadow: none;
-                border: 1px solid #999;
-                max-height: none;
-            }
-            .header h1 {
-                -webkit-text-fill-color: #222;
-                color: #222;
-            }
-            thead th {
-                background: #e8e8e8;
-                color: #333;
-                border-bottom-color: #666;
-            }
-            tr.row-friday td {
-                background: #fff8e8 !important;
-            }
-            tr.row-saturday td {
-                background: #f0f6fa !important;
-            }
-            tr.row-today td {
-                background: #e6f2ff !important;
-            }
-            .highlight-name {
-                background: #ffeb3b;
-                color: #000;
-                border: 1px solid #fbc02d;
-            }
+            body { background: #fff !important; color: #111 !important; font-size: 10px; }
+            .tab-nav, .footer-bar, .header-badge, .loading-spinner, .error-msg, .controls-bar,
+            .today-panel-wrapper, .stats-search-section, .selected-names-container { display: none !important; }
+            .tab-content { display: block !important; }
+            .tab-content:not(.active) { display: none !important; }
+            .table-wrapper { box-shadow: none; border: 1px solid #999; max-height: none; }
+            .header h1 { -webkit-text-fill-color: #222; color: #222; }
+            thead th { background: #e8e8e8; color: #333; border-bottom-color: #666; }
+            tr.row-friday td { background: #fff8e8 !important; }
+            tr.row-saturday td { background: #f0f6fa !important; }
+            tr.row-today td { background: #e6f2ff !important; }
+            .highlight-name { background: #ffeb3b; color: #000; border: 1px solid #fbc02d; }
         }
     </style>
 </head>
@@ -798,32 +906,81 @@
     <div class="error-msg" id="errorMsg"><span class="icon">⚠️</span><p>تعذر تحميل البيانات</p><p class="hint">تأكد من وجود ملف schedule.xlsx</p></div>
 
     <div class="controls-bar" id="controlsBar" style="display:none;">
-        <div class="search-container">
+        <div class="search-container" id="searchContainer">
             <span class="search-icon">🔍</span>
             <input type="text" id="searchInput" placeholder="ابحث عن اسم طالب..." autocomplete="off">
             <button class="clear-search" id="clearSearchBtn" title="مسح البحث">✕</button>
         </div>
     </div>
 
-    <div class="today-panel" id="todayPanel" style="display:none;">
-        <button class="today-nav-btn" id="prevDayBtn" title="اليوم السابق">◀ السابق</button>
-        <div class="today-info">
-            <div class="today-date-big" id="todayDateDisplay">—</div>
-            <div id="todaySectionsContainer"></div>
-        </div>
-        <button class="today-nav-btn" id="nextDayBtn" title="اليوم التالي">التالي ▶</button>
-    </div>
-
     <div class="tab-nav" id="tabNav" style="display:none;">
-        <button class="tab-btn active" data-tab="tab-mnaobat" onclick="switchTab('tab-mnaobat')"><span class="tab-icon">🔄</span> المناوبات</button>
-        <button class="tab-btn" data-tab="tab-idari" onclick="switchTab('tab-idari')"><span class="tab-icon">📋</span> الدوام الإداري</button>
+        <button class="tab-btn active" data-tab="tab-today" onclick="switchTab('tab-today')">
+            <span class="tab-icon">📅</span><span class="tab-text">مناوبين اليوم</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-mnaobat" onclick="switchTab('tab-mnaobat')">
+            <span class="tab-icon">🔄</span><span class="tab-text">جدول المناوبات</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-idari" onclick="switchTab('tab-idari')">
+            <span class="tab-icon">📋</span><span class="tab-text">جدول الدوام</span>
+        </button>
+        <button class="tab-btn" data-tab="tab-stats" onclick="switchTab('tab-stats')">
+            <span class="tab-icon">📊</span><span class="tab-text">إحصائيات</span>
+        </button>
     </div>
 
-    <div class="tab-content active" id="tab-mnaobat">
+    <div class="tab-content active" id="tab-today">
+        <div class="today-panel-wrapper">
+            <div class="today-nav-row">
+                <button class="today-nav-btn" id="prevDayBtn2" title="اليوم السابق">◀ السابق</button>
+                <button class="today-nav-btn" id="nextDayBtn2" title="اليوم التالي">التالي ▶</button>
+            </div>
+            <div class="today-date-big" id="todayDateDisplay2">—</div>
+            <div class="today-info" id="todaySectionsContainer2"></div>
+        </div>
+    </div>
+    <div class="tab-content" id="tab-mnaobat">
         <div class="table-wrapper"><table id="mnaobatTable" class="mnaobat-table" style="display:none;"><thead id="mnaobatHead"></thead><tbody id="mnaobatBody"></tbody></table></div>
     </div>
     <div class="tab-content" id="tab-idari">
         <div class="table-wrapper idari-wrapper"><table id="idariTable" class="idari-table" style="display:none;"><thead id="idariHead"></thead><tbody id="idariBody"></tbody></table></div>
+    </div>
+    <div class="tab-content" id="tab-stats">
+        <div class="stats-container">
+            <div class="stats-search-section">
+                <div class="stats-search-row">
+                    <div class="stats-search-container">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="statsSearchInput" placeholder="ابحث عن إحصائيات طالب... (يمكنك إضافة أكثر من اسم)" autocomplete="off">
+                        <div class="autocomplete-dropdown" id="statsAutocomplete"></div>
+                    </div>
+                    <select class="stats-year-select" id="statsYearSelect">
+                        <option value="">اختر السنة (للمناوبات)</option>
+                        <option value="اولى">السنة الأولى</option>
+                        <option value="ثانية">السنة الثانية</option>
+                        <option value="ثالثة">السنة الثالثة</option>
+                    </select>
+                </div>
+                <div class="selected-names-container" id="selectedNamesContainer"></div>
+            </div>
+
+            <div class="stats-result-card" id="statsMyMnCard">
+                <div class="stats-card-title"><span class="icon">📅</span> مناوباتي هذا الشهر - <span id="statsMyMnName"></span></div>
+                <div class="stats-table-wrapper"><table class="stats-table" id="statsMyMnTable"><thead id="statsMyMnHead"></thead><tbody id="statsMyMnBody"></tbody></table></div>
+                <div class="stats-no-data" id="statsMyMnEmpty">لم يتم العثور على بيانات</div>
+            </div>
+
+            <div class="stats-result-card" id="statsMnCard">
+                <div class="stats-card-title"><span class="icon">📊</span> إحصائيات المناوبات - <span id="statsMnName"></span></div>
+                <div class="stats-table-wrapper"><table class="stats-table" id="statsMnTable"><thead id="statsMnHead"></thead><tbody id="statsMnBody"></tbody></table></div>
+                <div class="stats-no-data" id="statsMnEmpty">لم يتم العثور على بيانات</div>
+            </div>
+
+            <div class="stats-result-card" id="statsFrzCard">
+                <div class="stats-card-title"><span class="icon">🏥</span> الفروزات السابقة - <span id="statsFrzName"></span></div>
+                <div class="stats-table-wrapper"><table class="stats-table" id="statsFrzTable"><thead id="statsFrzHead"></thead><tbody id="statsFrzBody"></tbody></table></div>
+                <div class="stats-no-data" id="statsFrzEmpty">لم يتم العثور على بيانات</div>
+            </div>
+        </div>
     </div>
     <div class="footer-bar" id="footerBar" style="display:none;">تم بواسطة <a href="#" id="devLink" target="_blank"></a></div>
 
@@ -831,604 +988,238 @@
         var settings = {};
         var allMnaobatRows = [];
         var allIdariRows = [];
-        var currentViewDay = '';
         var allUniqueDates = [];
         var clickedRow = null;
+        var staMnData = null;
+        var staFrzData = null;
+        var allStudentNames = [];
+        var mn1RawData = null;
+        var mn2RawData = null;
+        var mn3RawData = null;
+        var sectionColorMap = {};
+        var sectionColorCounter = 0;
+        var selectedNames = [];
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelector('.tab-btn[data-tab="' + tabId + '"]').classList.add('active');
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
+            var searchContainer = document.getElementById('searchContainer');
+            if (tabId === 'tab-today' || tabId === 'tab-mnaobat' || tabId === 'tab-idari') { searchContainer.style.display = ''; }
+            else { searchContainer.style.display = 'none'; }
             applySearchHighlight();
         }
 
         function parseDateAny(str) {
             if (!str && str !== 0) return null;
-            if (typeof str === 'number') {
-                var excelEpoch = new Date(1899, 11, 30);
-                var d = new Date(excelEpoch.getTime() + str * 86400000);
-                if (!isNaN(d)) return d;
-            }
+            if (typeof str === 'number') { var excelEpoch = new Date(1899, 11, 30); var d = new Date(excelEpoch.getTime() + str * 86400000); if (!isNaN(d)) return d; }
             str = String(str).trim();
             var parts = str.split('-');
-            if (parts.length === 3) {
-                var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                if (!isNaN(d) && d.getFullYear() > 1900) return d;
-            }
+            if (parts.length === 3) { var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])); if (!isNaN(d) && d.getFullYear() > 1900) return d; }
             parts = str.split(/[\/.]/);
-            if (parts.length === 3) {
-                var d1 = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-                if (!isNaN(d1) && d1.getFullYear() > 1900) return d1;
-                var d2 = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                if (!isNaN(d2) && d2.getFullYear() > 1900) return d2;
-            }
-            var d3 = new Date(str);
-            if (!isNaN(d3) && d3.getFullYear() > 1900) return d3;
+            if (parts.length === 3) { var d1 = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])); if (!isNaN(d1) && d1.getFullYear() > 1900) return d1; var d2 = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])); if (!isNaN(d2) && d2.getFullYear() > 1900) return d2; }
+            var d3 = new Date(str); if (!isNaN(d3) && d3.getFullYear() > 1900) return d3;
             return null;
         }
 
-        function toISODate(d) {
-            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2,
-                '0');
+        function toISODate(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+
+        function formatDateDisplay(dateRaw) {
+            if (dateRaw === undefined || dateRaw === null || dateRaw === '') return '';
+            if (typeof dateRaw === 'number') {
+                var excelEpoch = new Date(1899, 11, 30);
+                var d = new Date(excelEpoch.getTime() + dateRaw * 86400000);
+                if (!isNaN(d)) { return d.getDate() + '-' + (d.getMonth() + 1) + '-' + d.getFullYear(); }
+                return String(dateRaw);
+            }
+            var str = String(dateRaw).trim();
+            var parsed = parseDateAny(str);
+            if (parsed) { return parsed.getDate() + '-' + (parsed.getMonth() + 1) + '-' + parsed.getFullYear(); }
+            return str;
         }
 
         function formatDateArabic(d) {
-            var months = ['كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'تشرين الأول',
-                'تشرين الثاني', 'كانون الأول'
-            ];
+            var months = ['كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'];
             var days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
             return days[d.getDay()] + '، ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
         }
 
-        function getTodayDateStr() {
-            var t = new Date();
-            return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2,
-                '0');
-        }
+        function getTodayDateStr() { var t = new Date(); return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); }
 
-        // ---------------------------------------------
-        // دوال قراءة بيانات المناوبات من الأوراق mn1, mn2, mn3
-        // ---------------------------------------------
         function parseSingleYearSheet(sheet) {
             if (!sheet || sheet.length < 2) return { sections: [], dates: [], data: [] };
-
-            var headers = sheet[0]; // الصف الأول: الأيام, التاريخ, اليوم_بالعربي, ثم أسماء الأقسام مكررة
-            var rows = sheet.slice(1);
-
-            // استخراج أسماء الأقسام من الصف الأول (بدءاً من العمود 3)
-            var sections = [];
-            var sectionIndices = []; // يحفظ index كل قسم في مصفوفة sections
-            var lastSecName = '';
-            for (var i = 3; i < headers.length; i++) {
-                var secName = headers[i] ? String(headers[i]).trim() : '';
-                if (secName) {
-                    sections.push(secName);
-                    sectionIndices.push(sections.length - 1);
-                    lastSecName = secName;
-                } else {
-                    // إذا كانت الخلية فارغة (من بقايا دمج لم يتم فكه) نستخدم آخر اسم قسم
-                    if (lastSecName) {
-                        sectionIndices.push(sections.indexOf(lastSecName));
-                    } else {
-                        sectionIndices.push(-1); // لا يوجد قسم
-                    }
-                }
-            }
-
-            var resultData = [];
-            var dateSet = {};
-            var allDates = [];
-
+            var headers = sheet[0]; var rows = sheet.slice(1);
+            var sections = []; var sectionIndices = []; var lastSecName = '';
+            for (var i = 3; i < headers.length; i++) { var secName = headers[i] ? String(headers[i]).trim() : ''; if (secName) { sections.push(secName); sectionIndices.push(sections.length - 1); lastSecName = secName; } else { if (lastSecName) { sectionIndices.push(sections.indexOf(lastSecName)); } else { sectionIndices.push(-1); } } }
+            var resultData = []; var dateSet = {}; var allDates = [];
             for (var r = 0; r < rows.length; r++) {
-                var row = rows[r];
-                var dayNum = row[0] !== undefined ? String(row[0] || '').trim() : '';
-                var dateRaw = row[1];
-                var dayName = row[2] !== undefined ? String(row[2] || '').trim() : '';
-
+                var row = rows[r]; var dayNum = row[0] !== undefined ? String(row[0] || '').trim() : ''; var dateRaw = row[1]; var dayName = row[2] !== undefined ? String(row[2] || '').trim() : '';
                 if (!dayNum && !dateRaw && dateRaw !== 0) continue;
-
-                var dateObj = parseDateAny(dateRaw);
-                var isoDate = dateObj ? toISODate(dateObj) : String(dateRaw || '').trim();
-
-                if (isoDate && !dateSet[isoDate]) {
-                    dateSet[isoDate] = true;
-                    allDates.push(isoDate);
-                }
-
-                var rowData = {
-                    'اليوم': dayNum,
-                    'التاريخ': dateRaw,
-                    'اليوم_بالعربي': dayName,
-                    '_isodate': isoDate,
-                    'sections': {}
-                };
-
-                // توزيع الطلاب على الأقسام
-                for (var s = 0; s < sectionIndices.length; s++) {
-                    var secIdx = sectionIndices[s];
-                    if (secIdx === -1) continue;
-                    var secName = sections[secIdx];
-                    var colIdx = 3 + s;
-                    var cellValue = colIdx < row.length ? String(row[colIdx] || '').trim() : '';
-                    var students = cellValue ? cellValue.split(/[،,;\n\r]+/).map(n => n.trim()).filter(n => n) : [];
-                    if (!rowData['sections'][secName]) {
-                        rowData['sections'][secName] = [];
-                    }
-                    rowData['sections'][secName] = rowData['sections'][secName].concat(students);
-                }
-
+                var dateObj = parseDateAny(dateRaw); var isoDate = dateObj ? toISODate(dateObj) : String(dateRaw || '').trim();
+                if (isoDate && !dateSet[isoDate]) { dateSet[isoDate] = true; allDates.push(isoDate); }
+                var rowData = { 'اليوم': dayNum, 'التاريخ': dateRaw, 'اليوم_بالعربي': dayName, '_isodate': isoDate, '_dateObj': dateObj, 'sections': {} };
+                for (var s = 0; s < sectionIndices.length; s++) { var secIdx = sectionIndices[s]; if (secIdx === -1) continue; var secName = sections[secIdx]; var colIdx = 3 + s; var cellValue = colIdx < row.length ? String(row[colIdx] || '').trim() : ''; var students = cellValue ? cellValue.split(/[،,;\n\r]+/).map(n => n.trim()).filter(n => n) : []; if (!rowData['sections'][secName]) rowData['sections'][secName] = []; rowData['sections'][secName] = rowData['sections'][secName].concat(students); }
                 resultData.push(rowData);
             }
-
             return { sections: sections, dates: allDates.sort(), data: resultData };
+        }
+
+        function collectAllStudentNames() {
+            var nameSet = {};
+            if (staMnData && staMnData.length > 1) { for (var i = 1; i < staMnData.length; i++) { var name = staMnData[i][0] ? String(staMnData[i][0]).trim() : ''; if (name) nameSet[name] = true; } }
+            if (staFrzData && staFrzData.length > 1) { for (var i = 1; i < staFrzData.length; i++) { var name = staFrzData[i][0] ? String(staFrzData[i][0]).trim() : ''; if (name) nameSet[name] = true; } }
+            allMnaobatRows.forEach(function(row) { if (row.sections_data) { for (var sec in row.sections_data) { for (var year in row.sections_data[sec]) { var names = row.sections_data[sec][year] || []; names.forEach(function(n) { if (n) nameSet[n] = true; }); } } } });
+            allStudentNames = Object.keys(nameSet).sort();
         }
 
         function processWorkbook(workbook) {
             document.getElementById('loadingSpinner').style.display = 'none';
             document.getElementById('tabNav').style.display = 'flex';
             document.getElementById('controlsBar').style.display = 'flex';
-            document.getElementById('todayPanel').style.display = 'flex';
-
-            // إعدادات
-            if (workbook.SheetNames.indexOf('settings') !== -1) {
-                var sh = XLSX.utils.sheet_to_json(workbook.Sheets['settings'], { header: 1 });
-                sh.forEach(r => { if (r.length >= 2) settings[String(r[0]).trim()] = String(r[1]).trim(); });
-            } else {
-                settings = { 'اسم_المشفى': 'المشفى', 'الشعبة': '', 'الشهر_بالعربي': '', 'السنة': '',
-                'رقم_الواتساب': '', 'اسم_المطور': '' };
-            }
+            if (workbook.SheetNames.indexOf('settings') !== -1) { var sh = XLSX.utils.sheet_to_json(workbook.Sheets['settings'], { header: 1 }); sh.forEach(r => { if (r.length >= 2) settings[String(r[0]).trim()] = String(r[1]).trim(); }); }
+            else { settings = { 'اسم_المشفى': 'المشفى', 'الشعبة': '', 'الشهر_بالعربي': '', 'السنة': '', 'رقم_الواتساب': '', 'اسم_المطور': '' }; }
             document.getElementById('hospitalBadge').textContent = '🏥 ' + (settings['اسم_المشفى'] || 'المشفى');
-            document.getElementById('headerSubtitle').textContent = (settings['الشعبة'] || '') + ' · ' + (settings[
-                'الشهر_بالعربي'] || '') + ' ' + (settings['السنة'] || '');
+            document.getElementById('headerSubtitle').textContent = (settings['الشعبة'] || '') + ' · ' + (settings['الشهر_بالعربي'] || '') + ' ' + (settings['السنة'] || '');
             document.title = 'جدول المناوبات - ' + (settings['اسم_المشفى'] || '');
-            var dev = settings['اسم_المطور'] || '',
-                phone = settings['رقم_الواتساب'] || '';
-            var devLink = document.getElementById('devLink');
-            devLink.textContent = dev;
-            devLink.href = 'https://wa.me/' + phone.replace(/[^0-9]/g, '');
+            var dev = settings['اسم_المطور'] || '', phone = settings['رقم_الواتساب'] || '';
+            var devLink = document.getElementById('devLink'); devLink.textContent = dev; devLink.href = 'https://wa.me/' + phone.replace(/[^0-9]/g, '');
             document.getElementById('footerBar').style.display = dev ? 'block' : 'none';
-
-            // --- قراءة بيانات المناوبات من الأوراق الثلاثة ---
-            var year1Data = null,
-                year2Data = null,
-                year3Data = null;
-
-            if (workbook.SheetNames.indexOf('mn1') !== -1) {
-                year1Data = parseSingleYearSheet(XLSX.utils.sheet_to_json(workbook.Sheets['mn1'], { header: 1, raw: true,
-                    defval: '' }));
-            }
-            if (workbook.SheetNames.indexOf('mn2') !== -1) {
-                year2Data = parseSingleYearSheet(XLSX.utils.sheet_to_json(workbook.Sheets['mn2'], { header: 1, raw: true,
-                    defval: '' }));
-            }
-            if (workbook.SheetNames.indexOf('mn3') !== -1) {
-                year3Data = parseSingleYearSheet(XLSX.utils.sheet_to_json(workbook.Sheets['mn3'], { header: 1, raw: true,
-                    defval: '' }));
-            }
-
-            // تجميع كل الأقسام من السنوات الثلاثة
-            var allSectionsSet = {};
-            var allSectionsList = [];
-            if (year1Data) year1Data.sections.forEach(s => { if (!allSectionsSet[s]) { allSectionsSet[s] = true;
-                    allSectionsList.push(s); } });
-            if (year2Data) year2Data.sections.forEach(s => { if (!allSectionsSet[s]) { allSectionsSet[s] = true;
-                    allSectionsList.push(s); } });
-            if (year3Data) year3Data.sections.forEach(s => { if (!allSectionsSet[s]) { allSectionsSet[s] = true;
-                    allSectionsList.push(s); } });
-
-            // بناء allMnaobatRows الموحدة
-            allMnaobatRows = [];
-            var globalDateSet = {};
-
-            function addYearRows(yearData, yearKey) {
-                if (!yearData) return;
-                yearData.data.forEach(dayRow => {
-                    var existingRow = allMnaobatRows.find(r => r['_isodate'] === dayRow['_isodate'] && r[
-                        'اليوم'] === dayRow['اليوم']);
-                    if (!existingRow) {
-                        existingRow = {
-                            'اليوم': dayRow['اليوم'],
-                            'التاريخ': dayRow['التاريخ'],
-                            'اليوم_بالعربي': dayRow['اليوم_بالعربي'],
-                            '_isodate': dayRow['_isodate'],
-                            'sections_data': {}
-                        };
-                        allMnaobatRows.push(existingRow);
-                        if (dayRow['_isodate']) globalDateSet[dayRow['_isodate']] = true;
-                    }
-                    if (!existingRow['sections_data']) existingRow['sections_data'] = {};
-                    for (var sec in dayRow['sections']) {
-                        if (!existingRow['sections_data'][sec]) existingRow['sections_data'][sec] = {};
-                        existingRow['sections_data'][sec][yearKey] = dayRow['sections'][sec];
-                    }
-                });
-            }
-
-            addYearRows(year1Data, 'اولى');
-            addYearRows(year2Data, 'ثانية');
-            addYearRows(year3Data, 'ثالثة');
-
-            allUniqueDates = Object.keys(globalDateSet).sort();
-            allMnaobatRows.sort((a, b) => (a['_isodate'] || '').localeCompare(b['_isodate'] || ''));
-
-            // عرض جدول المناوبات
-            document.getElementById('mnaobatHead').innerHTML =
-                '<tr>' +
-                '<th class="corner-cell">#</th>' +
-                '<th>اليوم</th>' +
-                '<th>القسم</th>' +
-                '<th class="year-header year-col-1">🟣 السنة الأولى</th>' +
-                '<th class="year-header year-col-2">🟢 السنة الثانية</th>' +
-                '<th class="year-header year-col-3">🔴 السنة الثالثة</th>' +
-                '<th class="year-header year-col-4">🔵 السنة الرابعة</th>' +
-                '</tr>';
-            rebuildMnaobatTableBody(allSectionsList);
-            document.getElementById('mnaobatTable').style.display = 'table';
-
-            // --- قسم الإداري (نفس الكود القديم بالضبط) ---
-            if (workbook.SheetNames.indexOf('idari') !== -1) {
-                renderIdari(XLSX.utils.sheet_to_json(workbook.Sheets['idari'], { header: 1 }));
-            }
-
-            if (allMnaobatRows.length > 0) initTodayPanel();
-            initSearch();
+            if (workbook.SheetNames.indexOf('sta_mn') !== -1) { staMnData = XLSX.utils.sheet_to_json(workbook.Sheets['sta_mn'], { header: 1, raw: true, defval: '' }); }
+            if (workbook.SheetNames.indexOf('sta_frz') !== -1) { staFrzData = XLSX.utils.sheet_to_json(workbook.Sheets['sta_frz'], { header: 1, raw: true, defval: '' }); }
+            if (workbook.SheetNames.indexOf('mn1') !== -1) { mn1RawData = XLSX.utils.sheet_to_json(workbook.Sheets['mn1'], { header: 1, raw: true, defval: '' }); }
+            if (workbook.SheetNames.indexOf('mn2') !== -1) { mn2RawData = XLSX.utils.sheet_to_json(workbook.Sheets['mn2'], { header: 1, raw: true, defval: '' }); }
+            if (workbook.SheetNames.indexOf('mn3') !== -1) { mn3RawData = XLSX.utils.sheet_to_json(workbook.Sheets['mn3'], { header: 1, raw: true, defval: '' }); }
+            var year1Data = null, year2Data = null, year3Data = null;
+            if (mn1RawData) year1Data = parseSingleYearSheet(mn1RawData);
+            if (mn2RawData) year2Data = parseSingleYearSheet(mn2RawData);
+            if (mn3RawData) year3Data = parseSingleYearSheet(mn3RawData);
+            var allSectionsSet = {}, allSectionsList = [];
+            if (year1Data) year1Data.sections.forEach(s => { if (!allSectionsSet[s]) { allSectionsSet[s] = true; allSectionsList.push(s); } });
+            if (year2Data) year2Data.sections.forEach(s => { if (!allSectionsSet[s]) { allSectionsSet[s] = true; allSectionsList.push(s); } });
+            if (year3Data) year3Data.sections.forEach(s => { if (!allSectionsSet[s]) { allSectionsSet[s] = true; allSectionsList.push(s); } });
+            allMnaobatRows = []; var globalDateSet = {};
+            function addYearRows(yearData, yearKey) { if (!yearData) return; yearData.data.forEach(dayRow => { var existingRow = allMnaobatRows.find(r => r['_isodate'] === dayRow['_isodate'] && r['اليوم'] === dayRow['اليوم']); if (!existingRow) { existingRow = { 'اليوم': dayRow['اليوم'], 'التاريخ': dayRow['التاريخ'], 'اليوم_بالعربي': dayRow['اليوم_بالعربي'], '_isodate': dayRow['_isodate'], 'sections_data': {} }; allMnaobatRows.push(existingRow); if (dayRow['_isodate']) globalDateSet[dayRow['_isodate']] = true; } if (!existingRow['sections_data']) existingRow['sections_data'] = {}; for (var sec in dayRow['sections']) { if (!existingRow['sections_data'][sec]) existingRow['sections_data'][sec] = {}; existingRow['sections_data'][sec][yearKey] = dayRow['sections'][sec]; } }); }
+            addYearRows(year1Data, 'اولى'); addYearRows(year2Data, 'ثانية'); addYearRows(year3Data, 'ثالثة');
+            allUniqueDates = Object.keys(globalDateSet).sort(); allMnaobatRows.sort((a, b) => (a['_isodate'] || '').localeCompare(b['_isodate'] || ''));
+            document.getElementById('mnaobatHead').innerHTML = '<tr><th class="corner-cell">#</th><th>اليوم</th><th>القسم</th><th class="year-header year-col-1">🟣 السنة الأولى</th><th class="year-header year-col-2">🟢 السنة الثانية</th><th class="year-header year-col-3">🔴 السنة الثالثة</th><th class="year-header year-col-4">🔵 السنة الرابعة</th></tr>';
+            rebuildMnaobatTableBody(allSectionsList); document.getElementById('mnaobatTable').style.display = 'table';
+            if (workbook.SheetNames.indexOf('idari') !== -1) { renderIdari(XLSX.utils.sheet_to_json(workbook.Sheets['idari'], { header: 1 })); }
+            collectAllStudentNames();
+            if (allMnaobatRows.length > 0) { initStandaloneTodayPanel(); }
+            initSearch(); initStatsSearch();
+            document.getElementById('searchContainer').style.display = '';
         }
 
-        // ---------------------------------------------
-        // دوال عرض الجدول (معدلة للبنية الجديدة)
-        // ---------------------------------------------
         function rebuildMnaobatTableBody(sectionsList) {
-            var todayIso = getTodayDateStr();
-            var bodyHTML = '';
-            var dayGroups = {},
-                dayOrder = [];
-            allMnaobatRows.forEach((r, idx) => {
-                var dayKey = r['اليوم'] || r['_isodate'] || '';
-                if (!dayGroups[dayKey]) { dayGroups[dayKey] = [];
-                    dayOrder.push(dayKey); }
-                dayGroups[dayKey].push({ row: r, idx: idx });
-            });
-
+            var todayIso = getTodayDateStr(); var bodyHTML = ''; var dayGroups = {}, dayOrder = [];
+            allMnaobatRows.forEach((r, idx) => { var dayKey = r['اليوم'] || r['_isodate'] || ''; if (!dayGroups[dayKey]) { dayGroups[dayKey] = []; dayOrder.push(dayKey); } dayGroups[dayKey].push({ row: r, idx: idx }); });
             var dayGroupIdx = 0;
-            dayOrder.forEach(dayKey => {
-                var rows = dayGroups[dayKey];
-                var rs = rows.length;
-                dayGroupIdx++;
-                var first = true;
-
-                // تجميع أقسام هذا اليوم من جميع الصفوف
-                var daySections = {};
-                rows.forEach(item => {
-                    var r = item.row;
-                    if (r['sections_data']) {
-                        for (var sec in r['sections_data']) {
-                            if (!daySections[sec]) daySections[sec] = r['sections_data'][sec];
-                        }
-                    }
-                });
-                var sectionNames = Object.keys(daySections);
-                if (sectionNames.length === 0) sectionNames = ['—'];
-
-                var totalRowsInDay = sectionNames.length;
-                var secRowIdx = 0;
-
-                sectionNames.forEach(sec => {
-                    var r = rows[0].row; // نستخدم الصف الأول لليوم والتاريخ
-                    var idx = rows[0].idx;
-                    var iso = r['_isodate'] || '';
-                    var isToday = (iso === todayIso);
-                    var dayType = 'normal';
-                    var d = parseDateAny(r['التاريخ']);
-                    if (d) { var dow = d.getDay(); if (dow === 5) dayType = 'friday'; if (dow === 6) dayType =
-                            'saturday'; }
-
-                    var cls = [];
-                    if (dayType === 'friday') cls.push('row-friday');
-                    else if (dayType === 'saturday') cls.push('row-saturday');
-                    if (isToday) cls.push('row-today');
-
-                    var tClass = (dayType === 'friday') ? 'friday-text' : (dayType === 'saturday') ?
-                        'saturday-text' : '';
-
-                    bodyHTML += '<tr id="mnaobat-row-' + idx + '-' + secRowIdx + '" class="' + cls.join(
-                        ' ') + '" data-row-index="' + idx + '" data-date="' + iso +
-                        '" data-day-group="' + dayGroupIdx + '" onclick="handleMnaobatRowClick(this)">';
-
-                    if (secRowIdx === 0) {
-                        bodyHTML += '<td class="day-num ' + tClass + '" id="daynum-' + dayGroupIdx +
-                            '" rowspan="' + totalRowsInDay + '">' + (r['اليوم'] || '') + '</td>';
-                        bodyHTML += '<td id="dayname-' + dayGroupIdx + '" rowspan="' + totalRowsInDay +
-                            '"><span class="day-name ' + tClass + '">' + (r['اليوم_بالعربي'] || '') +
-                            '</span></td>';
-                    }
-
-                    bodyHTML += '<td class="section-name-cell">' + sec + '</td>';
-                    var years = ['اولى', 'ثانية', 'ثالثة', 'رابعة'];
-                    for (var yi = 0; yi < 4; yi++) {
-                        bodyHTML += '<td><div class="name-stack">';
-                        var namesArr = (daySections[sec] && daySections[sec][years[yi]]) ? daySections[sec][
-                            years[yi]
-                        ] : [];
-                        if (namesArr.length === 0) bodyHTML += '<span class="rest-note">—</span>';
-                        else namesArr.forEach(n => bodyHTML += '<span class="student-name">' + n +
-                            '</span>');
-                        bodyHTML += '</div></td>';
-                    }
-                    bodyHTML += '</tr>';
-                    secRowIdx++;
-                });
+            dayOrder.forEach(dayKey => { var rows = dayGroups[dayKey]; dayGroupIdx++; var daySections = {}; rows.forEach(item => { var r = item.row; if (r['sections_data']) { for (var sec in r['sections_data']) { if (!daySections[sec]) daySections[sec] = r['sections_data'][sec]; } } }); var sectionNames = Object.keys(daySections); if (sectionNames.length === 0) sectionNames = ['—']; var totalRowsInDay = sectionNames.length; var secRowIdx = 0;
+                sectionNames.forEach(sec => { var r = rows[0].row; var idx = rows[0].idx; var iso = r['_isodate'] || ''; var isToday = (iso === todayIso); var dayType = 'normal'; var d = parseDateAny(r['التاريخ']); if (d) { var dow = d.getDay(); if (dow === 5) dayType = 'friday'; if (dow === 6) dayType = 'saturday'; } var cls = []; if (dayType === 'friday') cls.push('row-friday'); else if (dayType === 'saturday') cls.push('row-saturday'); if (isToday) cls.push('row-today'); var tClass = (dayType === 'friday') ? 'friday-text' : (dayType === 'saturday') ? 'saturday-text' : '';
+                    bodyHTML += '<tr id="mnaobat-row-' + idx + '-' + secRowIdx + '" class="' + cls.join(' ') + '" data-row-index="' + idx + '" data-date="' + iso + '" data-day-group="' + dayGroupIdx + '" onclick="handleMnaobatRowClick(this)">';
+                    if (secRowIdx === 0) { bodyHTML += '<td class="day-num ' + tClass + '" id="daynum-' + dayGroupIdx + '" rowspan="' + totalRowsInDay + '">' + (r['اليوم'] || '') + '</td>'; bodyHTML += '<td id="dayname-' + dayGroupIdx + '" rowspan="' + totalRowsInDay + '"><span class="day-name ' + tClass + '">' + (r['اليوم_بالعربي'] || '') + '</span></td>'; }
+                    bodyHTML += '<td class="section-name-cell">' + sec + '</td>'; var years = ['اولى', 'ثانية', 'ثالثة', 'رابعة'];
+                    for (var yi = 0; yi < 4; yi++) { bodyHTML += '<td><div class="name-stack">'; var namesArr = (daySections[sec] && daySections[sec][years[yi]]) ? daySections[sec][years[yi]] : []; if (namesArr.length === 0) bodyHTML += '<span class="rest-note">—</span>'; else namesArr.forEach(n => bodyHTML += '<span class="student-name">' + n + '</span>'); bodyHTML += '</div></td>'; }
+                    bodyHTML += '</tr>'; secRowIdx++; });
             });
-            document.getElementById('mnaobatBody').innerHTML = bodyHTML;
-            applySearchHighlight();
+            document.getElementById('mnaobatBody').innerHTML = bodyHTML; applySearchHighlight();
         }
 
-        // ---------------------------------------------
-        // دوال قسم الإداري (نفس الكود القديم بالضبط)
-        // ---------------------------------------------
-        function findColumnIndex(headers, keywords) {
-            for (var i = 0; i < headers.length; i++) {
-                var h = String(headers[i] || '').trim();
-                for (var k = 0; k < keywords.length; k++) {
-                    if (h.indexOf(keywords[k]) !== -1) return i;
-                }
-            }
-            return -1;
-        }
+        function findColumnIndex(headers, keywords) { for (var i = 0; i < headers.length; i++) { var h = String(headers[i] || '').trim(); for (var k = 0; k < keywords.length; k++) { if (h.indexOf(keywords[k]) !== -1) return i; } } return -1; }
 
         function renderIdari(rawData) {
-            if (!rawData || rawData.length < 2) return;
-            var headers = rawData[0];
-            var secIdx = findColumnIndex(headers, ['القسم', 'القسم_الثابت', 'قسم', 'section']);
-            var y1 = findColumnIndex(headers, ['أولى', 'الاولى', 'الأولى']);
-            var y2 = findColumnIndex(headers, ['ثانية', 'الثانية']);
-            var y3 = findColumnIndex(headers, ['ثالثة', 'الثالثة']);
-            var y4 = findColumnIndex(headers, ['رابعة', 'الرابعة']);
-            if (secIdx === -1) secIdx = 0;
-            if (y1 === -1 && headers.length > 1) y1 = 1;
-            if (y2 === -1 && headers.length > 2) y2 = 2;
-            if (y3 === -1 && headers.length > 3) y3 = 3;
-            if (y4 === -1 && headers.length > 4) y4 = 4;
-            allIdariRows = [];
-            for (var i = 1; i < rawData.length; i++) {
-                var sec = rawData[i][secIdx] !== undefined ? String(rawData[i][secIdx] || '').trim() : '';
-                if (!sec) continue;
-                var obj = { '_section': sec };
-                obj['_year0'] = rawData[i][y1] !== undefined ? String(rawData[i][y1] || '').trim() : '';
-                obj['_year1'] = rawData[i][y2] !== undefined ? String(rawData[i][y2] || '').trim() : '';
-                obj['_year2'] = rawData[i][y3] !== undefined ? String(rawData[i][y3] || '').trim() : '';
-                obj['_year3'] = rawData[i][y4] !== undefined ? String(rawData[i][y4] || '').trim() : '';
-                allIdariRows.push(obj);
-            }
+            if (!rawData || rawData.length < 2) return; var headers = rawData[0]; var secIdx = findColumnIndex(headers, ['القسم', 'القسم_الثابت', 'قسم', 'section']); var y1 = findColumnIndex(headers, ['أولى', 'الاولى', 'الأولى']); var y2 = findColumnIndex(headers, ['ثانية', 'الثانية']); var y3 = findColumnIndex(headers, ['ثالثة', 'الثالثة']); var y4 = findColumnIndex(headers, ['رابعة', 'الرابعة']); if (secIdx === -1) secIdx = 0; if (y1 === -1 && headers.length > 1) y1 = 1; if (y2 === -1 && headers.length > 2) y2 = 2; if (y3 === -1 && headers.length > 3) y3 = 3; if (y4 === -1 && headers.length > 4) y4 = 4; allIdariRows = [];
+            for (var i = 1; i < rawData.length; i++) { var sec = rawData[i][secIdx] !== undefined ? String(rawData[i][secIdx] || '').trim() : ''; if (!sec) continue; var obj = { '_section': sec }; obj['_year0'] = rawData[i][y1] !== undefined ? String(rawData[i][y1] || '').trim() : ''; obj['_year1'] = rawData[i][y2] !== undefined ? String(rawData[i][y2] || '').trim() : ''; obj['_year2'] = rawData[i][y3] !== undefined ? String(rawData[i][y3] || '').trim() : ''; obj['_year3'] = rawData[i][y4] !== undefined ? String(rawData[i][y4] || '').trim() : ''; allIdariRows.push(obj); }
             if (allIdariRows.length === 0) return;
-            document.getElementById('idariHead').innerHTML =
-                '<tr><th class="corner-cell">القسم</th>' +
-                '<th class="year-header year-col-1">🟣 السنة الأولى</th>' +
-                '<th class="year-header year-col-2">🟢 السنة الثانية</th>' +
-                '<th class="year-header year-col-3">🔴 السنة الثالثة</th>' +
-                '<th class="year-header year-col-4">🔵 السنة الرابعة</th></tr>';
-            rebuildIdariTableBody();
-            document.getElementById('idariTable').style.display = 'table';
+            document.getElementById('idariHead').innerHTML = '<tr><th class="corner-cell">القسم</th><th class="year-header year-col-1">🟣 السنة الأولى</th><th class="year-header year-col-2">🟢 السنة الثانية</th><th class="year-header year-col-3">🔴 السنة الثالثة</th><th class="year-header year-col-4">🔵 السنة الرابعة</th></tr>';
+            rebuildIdariTableBody(); document.getElementById('idariTable').style.display = 'table';
         }
 
-        function rebuildIdariTableBody() {
-            var html = '';
-            allIdariRows.forEach((r, idx) => {
-                html += '<tr id="idari-row-' + idx + '" onclick="handleIdariRowClick(this)" style="cursor:pointer;">';
-                html += '<td class="section-header-cell">' + r['_section'] + '</td>';
-                for (var y = 0; y < 4; y++) {
-                    html += '<td><div class="name-stack">';
-                    var names = r['_year' + y] || '';
-                    if (!names) html += '<span style="color:#555;">—</span>';
-                    else names.split(/[،,;\-–—]+/).filter(n => n.trim()).forEach(n => html +=
-                        '<span class="student-name">' + n.trim() + '</span>');
-                    html += '</div></td>';
-                }
-                html += '</tr>';
-            });
-            document.getElementById('idariBody').innerHTML = html;
-            applySearchHighlight();
+        function rebuildIdariTableBody() { var html = ''; allIdariRows.forEach((r, idx) => { html += '<tr id="idari-row-' + idx + '" onclick="handleIdariRowClick(this)" style="cursor:pointer;">'; html += '<td class="section-header-cell">' + r['_section'] + '</td>'; for (var y = 0; y < 4; y++) { html += '<td><div class="name-stack">'; var names = r['_year' + y] || ''; if (!names) html += '<span style="color:#555;">—</span>'; else names.split(/[،,;\-–—]+/).filter(n => n.trim()).forEach(n => html += '<span class="student-name">' + n.trim() + '</span>'); html += '</div></td>'; } html += '</tr>'; }); document.getElementById('idariBody').innerHTML = html; applySearchHighlight(); }
+
+        function handleIdariRowClick(tr) { if (clickedRow && clickedRow !== tr) { clickedRow.classList.remove('row-clicked'); removeAllClickedHighlights(); } if (clickedRow === tr) { tr.classList.remove('row-clicked'); removeAllClickedHighlights(); clickedRow = null; return; } tr.classList.add('row-clicked'); clickedRow = tr; }
+
+        var standaloneCurrentDay = '';
+        function initStandaloneTodayPanel() { if (allUniqueDates.length === 0) { document.getElementById('todayDateDisplay2').textContent = 'لا توجد بيانات'; document.getElementById('todaySectionsContainer2').innerHTML = '<div class="today-empty">—</div>'; document.getElementById('prevDayBtn2').disabled = true; document.getElementById('nextDayBtn2').disabled = true; return; } var today = getTodayDateStr(); if (allUniqueDates.indexOf(today) === -1) today = allUniqueDates[0]; standaloneCurrentDay = today; updateStandaloneTodayPanel(); document.getElementById('prevDayBtn2').onclick = () => navigateStandaloneTodayPanel(-1); document.getElementById('nextDayBtn2').onclick = () => navigateStandaloneTodayPanel(1); document.getElementById('todaySectionsContainer2').addEventListener('click', function(e) { var section = e.target.closest('.today-section'); if (!section) return; this.querySelectorAll('.today-section-active').forEach(s => s.classList.remove('today-section-active')); section.classList.add('today-section-active'); }); }
+        function navigateStandaloneTodayPanel(dir) { var idx = allUniqueDates.indexOf(standaloneCurrentDay); if (idx === -1) idx = 0; var newIdx = idx + dir; if (newIdx < 0 || newIdx >= allUniqueDates.length) return; standaloneCurrentDay = allUniqueDates[newIdx]; updateStandaloneTodayPanel(); }
+        function updateStandaloneTodayPanel() { var d = parseDateAny(standaloneCurrentDay); document.getElementById('todayDateDisplay2').textContent = 'مناوبين يوم ' + (d ? formatDateArabic(d) : standaloneCurrentDay); var sectionsMap = {}, sectionsOrder = []; allMnaobatRows.forEach(r => { if (r['_isodate'] === standaloneCurrentDay && r['sections_data']) { for (var sec in r['sections_data']) { if (!sectionsMap[sec]) { sectionsMap[sec] = { 'اولى': [], 'ثانية': [], 'ثالثة': [], 'رابعة': [] }; sectionsOrder.push(sec); } ['اولى', 'ثانية', 'ثالثة', 'رابعة'].forEach(year => { var names = r['sections_data'][sec][year] || []; names.forEach(n => { if (sectionsMap[sec][year].indexOf(n) === -1) sectionsMap[sec][year].push(n); }); }); } } }); var container = document.getElementById('todaySectionsContainer2'); if (sectionsOrder.length === 0) { container.innerHTML = '<div class="today-empty">لا توجد مناوبات لهذا اليوم</div>'; } else { var html = ''; sectionsOrder.forEach(sec => { var data = sectionsMap[sec]; html += '<div class="today-section"><div class="today-section-title">' + sec + '</div><div class="today-years">'; var yearLabels = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة']; var yearKeys = ['اولى', 'ثانية', 'ثالثة', 'رابعة']; for (var i = 0; i < 4; i++) { var names = data[yearKeys[i]]; html += '<div class="today-year-group">'; html += '<span class="today-year-label">' + yearLabels[i] + ':</span>'; html += '<span class="today-year-names">'; if (names.length > 0) { html += names.map(function(name) { return '<span class="student-name">' + name + '</span>'; }).join('<span>, </span>'); } else { html += '<span class="student-name" style="color:#555;">—</span>'; } html += '</span></div>'; } html += '</div></div>'; }); container.innerHTML = html; } var idx = allUniqueDates.indexOf(standaloneCurrentDay); document.getElementById('prevDayBtn2').disabled = (idx <= 0); document.getElementById('nextDayBtn2').disabled = (idx >= allUniqueDates.length - 1); applySearchHighlight(); }
+
+        function handleMnaobatRowClick(tr) { if (clickedRow && clickedRow !== tr) { clickedRow.classList.remove('row-clicked'); removeAllClickedHighlights(); } if (clickedRow === tr) { tr.classList.remove('row-clicked'); removeAllClickedHighlights(); clickedRow = null; return; } tr.classList.add('row-clicked'); clickedRow = tr; var g = tr.getAttribute('data-day-group'); if (g) { var dn = document.getElementById('daynum-' + g); var dnm = document.getElementById('dayname-' + g); if (dn) dn.classList.add('clicked-highlight'); if (dnm) dnm.classList.add('clicked-highlight-dayname'); } }
+        function removeAllClickedHighlights() { document.querySelectorAll('td.day-num.clicked-highlight').forEach(td => td.classList.remove('clicked-highlight')); document.querySelectorAll('td.clicked-highlight-dayname').forEach(td => td.classList.remove('clicked-highlight-dayname')); }
+
+        function initSearch() { var inp = document.getElementById('searchInput'); var clr = document.getElementById('clearSearchBtn'); inp.addEventListener('input', () => { clr.classList.toggle('visible', inp.value.trim().length > 0); applySearchHighlight(); }); clr.addEventListener('click', () => { inp.value = ''; clr.classList.remove('visible'); applySearchHighlight(); inp.focus(); }); inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); inp.blur(); var firstHighlight = document.querySelector('.highlight-name'); if (firstHighlight) { firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' }); } } }); }
+        function applySearchHighlight() { var term = document.getElementById('searchInput').value.trim(); document.querySelectorAll('.highlight-name').forEach(el => { el.outerHTML = el.textContent; }); if (!term) return; document.querySelectorAll('.student-name').forEach(span => { var txt = span.textContent; if (txt.indexOf(term) !== -1) { var re = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'); span.innerHTML = txt.replace(re, '<span class="highlight-name">$1</span>'); } }); }
+
+        function getSectionColorIndex(sectionName) { if (sectionColorMap[sectionName] !== undefined) { return sectionColorMap[sectionName]; } var idx = sectionColorCounter % 7; sectionColorMap[sectionName] = idx; sectionColorCounter++; return idx; }
+        function getColClass(colIndex) { if (colIndex === 0) return 'col-name'; if (colIndex % 2 === 1) return 'col-odd'; return 'col-even'; }
+
+        function updateSelectedNamesUI() { var container = document.getElementById('selectedNamesContainer'); if (selectedNames.length === 0) { container.innerHTML = ''; return; } container.innerHTML = selectedNames.map(function(name, index) { return '<span class="selected-name-tag">' + name + '<span class="remove-tag" data-index="' + index + '" title="إزالة">✕</span></span>'; }).join(''); }
+        function addNameToSelection(name) { if (!name) return; if (selectedNames.indexOf(name) === -1) { selectedNames.push(name); updateSelectedNamesUI(); } document.getElementById('statsSearchInput').value = ''; document.getElementById('statsAutocomplete').classList.remove('show'); performStatsSearch(); }
+        function removeNameFromSelection(index) { selectedNames.splice(index, 1); updateSelectedNamesUI(); if (selectedNames.length > 0) { performStatsSearch(); } else { hideAllStatsCards(); } }
+        function hideAllStatsCards() { document.getElementById('statsMyMnCard').classList.remove('show'); document.getElementById('statsMnCard').classList.remove('show'); document.getElementById('statsFrzCard').classList.remove('show'); }
+
+        function initStatsSearch() {
+            var inp = document.getElementById('statsSearchInput'); var dropdown = document.getElementById('statsAutocomplete'); var yearSelect = document.getElementById('statsYearSelect'); var container = document.getElementById('selectedNamesContainer');
+            container.addEventListener('click', function(e) { var removeBtn = e.target.closest('.remove-tag'); if (removeBtn) { var index = parseInt(removeBtn.getAttribute('data-index')); removeNameFromSelection(index); } });
+            inp.addEventListener('input', function() { var term = this.value.trim(); if (term.length < 1) { dropdown.classList.remove('show'); return; } var matches = allStudentNames.filter(function(name) { return name.indexOf(term) !== -1; }); if (matches.length > 0) { dropdown.innerHTML = matches.map(function(name, i) { return '<div class="autocomplete-item' + (i === 0 ? ' active' : '') + '" data-name="' + name + '">' + name + '</div>'; }).join(''); dropdown.classList.add('show'); } else { dropdown.classList.remove('show'); } });
+            dropdown.addEventListener('click', function(e) { var item = e.target.closest('.autocomplete-item'); if (!item) return; addNameToSelection(item.getAttribute('data-name')); });
+            inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); var term = this.value.trim(); if (term) { var exactMatch = allStudentNames.find(function(name) { return name === term; }); if (exactMatch) { addNameToSelection(exactMatch); } else if (dropdown.querySelector('.autocomplete-item')) { addNameToSelection(dropdown.querySelector('.autocomplete-item').getAttribute('data-name')); } else { addNameToSelection(term); } } } else if (e.key === 'ArrowDown') { e.preventDefault(); var items = dropdown.querySelectorAll('.autocomplete-item'); var activeIdx = -1; items.forEach(function(item, i) { if (item.classList.contains('active')) activeIdx = i; }); if (activeIdx < items.length - 1) { items[activeIdx].classList.remove('active'); items[activeIdx + 1].classList.add('active'); items[activeIdx + 1].scrollIntoView({ block: 'nearest' }); } } else if (e.key === 'ArrowUp') { e.preventDefault(); var items = dropdown.querySelectorAll('.autocomplete-item'); var activeIdx = -1; items.forEach(function(item, i) { if (item.classList.contains('active')) activeIdx = i; }); if (activeIdx > 0) { items[activeIdx].classList.remove('active'); items[activeIdx - 1].classList.add('active'); items[activeIdx - 1].scrollIntoView({ block: 'nearest' }); } } });
+            document.addEventListener('click', function(e) { if (!e.target.closest('.stats-search-container') && !e.target.closest('.selected-names-container')) { dropdown.classList.remove('show'); } });
+            yearSelect.addEventListener('change', function() { if (selectedNames.length > 0) { performStatsSearch(); } });
         }
 
-        function handleIdariRowClick(tr) {
-            if (clickedRow && clickedRow !== tr) {
-                clickedRow.classList.remove('row-clicked');
-                removeAllClickedHighlights();
-            }
-            if (clickedRow === tr) {
-                tr.classList.remove('row-clicked');
-                removeAllClickedHighlights();
-                clickedRow = null;
-                return;
-            }
-            tr.classList.add('row-clicked');
-            clickedRow = tr;
+        function performStatsSearch() { if (selectedNames.length === 0) { hideAllStatsCards(); return; } showMyMnaobat(selectedNames); showStatsMn(selectedNames); showStatsFrz(selectedNames); }
+
+        function showStatsMn(namesArray) {
+            var card = document.getElementById('statsMnCard'); var table = document.getElementById('statsMnTable'); var head = document.getElementById('statsMnHead'); var body = document.getElementById('statsMnBody'); var empty = document.getElementById('statsMnEmpty'); var nameSpan = document.getElementById('statsMnName');
+            nameSpan.textContent = namesArray.join(' + '); head.innerHTML = ''; body.innerHTML = ''; empty.style.display = 'none'; table.style.display = 'none';
+            if (!staMnData || staMnData.length < 2) { empty.style.display = 'block'; card.classList.add('show'); return; }
+            var headers = staMnData[0]; var allRows = [];
+            for (var n = 0; n < namesArray.length; n++) { for (var i = 1; i < staMnData.length; i++) { var rowName = staMnData[i][0] ? String(staMnData[i][0]).trim() : ''; if (rowName === namesArray[n]) { allRows.push(staMnData[i]); break; } } }
+            if (allRows.length === 0) { empty.textContent = 'لم يتم العثور على بيانات للأسماء المحددة'; empty.style.display = 'block'; card.classList.add('show'); return; }
+            var mergedRow = []; for (var j = 0; j < headers.length; j++) { if (j === 0) { mergedRow.push(namesArray.join(' + ')); } else { var sum = 0; for (var r = 0; r < allRows.length; r++) { var val = allRows[r][j] !== undefined ? String(allRows[r][j] || '0').trim() : '0'; sum += parseInt(val) || 0; } mergedRow.push(sum); } }
+            var totalCols = 0; for (var j = 0; j < headers.length; j++) { var hdr = String(headers[j] || '').trim(); if (hdr || j === 0) totalCols++; }
+            var summaryStart = totalCols - 2; if (summaryStart < 1) summaryStart = 1;
+            var headHTML = '<tr>'; var bodyHTML = '<tr>'; var colIdx = 0;
+            for (var j = 0; j < headers.length; j++) { var hdr = String(headers[j] || '').trim(); if (!hdr && j > 0) continue; var isSummary = (colIdx >= summaryStart); var colClass = ''; if (colIdx === 0) { colClass = 'col-name'; } else if (isSummary) { colClass = 'col-summary'; } else { colClass = getColClass(colIdx); } if (colIdx === summaryStart && colIdx > 0) { colClass += ' col-separator'; } headHTML += '<th class="' + colClass + '">' + hdr + '</th>'; bodyHTML += '<td class="' + colClass + '">' + mergedRow[j] + '</td>'; colIdx++; }
+            headHTML += '</tr>'; bodyHTML += '</tr>';
+            head.innerHTML = headHTML; body.innerHTML = bodyHTML; table.style.display = 'table'; card.classList.add('show');
         }
 
-        // ---------------------------------------------
-        // دوال لوحة اليوم (معدلة للبنية الجديدة)
-        // ---------------------------------------------
-        function initTodayPanel() {
-            if (allUniqueDates.length === 0) {
-                document.getElementById('todayDateDisplay').textContent = 'لا توجد بيانات';
-                document.getElementById('todaySectionsContainer').innerHTML = '<div class="today-empty">—</div>';
-                document.getElementById('prevDayBtn').disabled = true;
-                document.getElementById('nextDayBtn').disabled = true;
-                return;
-            }
-            var today = getTodayDateStr();
-            if (allUniqueDates.indexOf(today) === -1) today = allUniqueDates[0];
-            currentViewDay = today;
-            updateTodayPanel();
-            document.getElementById('prevDayBtn').onclick = () => navigateTodayPanel(-1);
-            document.getElementById('nextDayBtn').onclick = () => navigateTodayPanel(1);
-            document.getElementById('todaySectionsContainer').addEventListener('click', function(e) {
-                var section = e.target.closest('.today-section');
-                if (!section) return;
-                this.querySelectorAll('.today-section-active').forEach(s => s.classList.remove(
-                    'today-section-active'));
-                section.classList.add('today-section-active');
-            });
+        function showStatsFrz(namesArray) {
+            var card = document.getElementById('statsFrzCard'); var table = document.getElementById('statsFrzTable'); var head = document.getElementById('statsFrzHead'); var body = document.getElementById('statsFrzBody'); var empty = document.getElementById('statsFrzEmpty'); var nameSpan = document.getElementById('statsFrzName');
+            nameSpan.textContent = namesArray.join(' + '); head.innerHTML = ''; body.innerHTML = ''; empty.style.display = 'none'; table.style.display = 'none';
+            if (!staFrzData || staFrzData.length < 2) { empty.style.display = 'block'; card.classList.add('show'); return; }
+            var headers = staFrzData[0]; var allRows = [];
+            for (var n = 0; n < namesArray.length; n++) { for (var i = 1; i < staFrzData.length; i++) { var rowName = staFrzData[i][0] ? String(staFrzData[i][0]).trim() : ''; if (rowName === namesArray[n]) { allRows.push(staFrzData[i]); break; } } }
+            if (allRows.length === 0) { empty.textContent = 'لم يتم العثور على فروزات سابقة للأسماء المحددة'; empty.style.display = 'block'; card.classList.add('show'); return; }
+            var mergedRow = []; for (var j = 0; j < headers.length; j++) { if (j === 0) { mergedRow.push(namesArray.join(' + ')); } else { var values = []; for (var r = 0; r < allRows.length; r++) { var val = allRows[r][j] !== undefined ? String(allRows[r][j] || '').trim() : ''; if (val) values.push(val); } mergedRow.push(values.join(' / ')); } }
+            // للفروزات: كل الأعمدة بالتناوب، بدون أعمدة summary
+            var headHTML = '<tr>'; var bodyHTML = '<tr>'; var colIdx = 0;
+            for (var j = 0; j < headers.length; j++) { var hdr = String(headers[j] || '').trim(); if (!hdr && j > 0) continue; var colClass = getColClass(colIdx); headHTML += '<th class="' + colClass + '">' + hdr + '</th>'; bodyHTML += '<td class="' + colClass + '">' + (mergedRow[j] || '—') + '</td>'; colIdx++; }
+            headHTML += '</tr>'; bodyHTML += '</tr>';
+            head.innerHTML = headHTML; body.innerHTML = bodyHTML; table.style.display = 'table'; card.classList.add('show');
         }
 
-        function navigateTodayPanel(dir) {
-            var idx = allUniqueDates.indexOf(currentViewDay);
-            if (idx === -1) idx = 0;
-            var newIdx = idx + dir;
-            if (newIdx < 0 || newIdx >= allUniqueDates.length) return;
-            currentViewDay = allUniqueDates[newIdx];
-            updateTodayPanel();
+        function showMyMnaobat(namesArray) {
+            var card = document.getElementById('statsMyMnCard'); var table = document.getElementById('statsMyMnTable'); var head = document.getElementById('statsMyMnHead'); var body = document.getElementById('statsMyMnBody'); var empty = document.getElementById('statsMyMnEmpty'); var nameSpan = document.getElementById('statsMyMnName'); var yearSelect = document.getElementById('statsYearSelect');
+            nameSpan.textContent = namesArray.join(' + '); head.innerHTML = ''; body.innerHTML = ''; empty.style.display = 'none'; table.style.display = 'none';
+            var selectedYear = yearSelect.value; var rawData = null;
+            if (selectedYear === 'اولى') rawData = mn1RawData; else if (selectedYear === 'ثانية') rawData = mn2RawData; else if (selectedYear === 'ثالثة') rawData = mn3RawData;
+            if (!rawData) { if (!selectedYear) { empty.textContent = 'الرجاء اختيار السنة أولاً'; } else { empty.textContent = 'لا توجد بيانات للسنة المحددة'; } empty.style.display = 'block'; card.classList.add('show'); return; }
+            var yearData = parseSingleYearSheet(rawData); var results = [];
+            yearData.data.forEach(function(dayRow) { var dateObj = dayRow['_dateObj'] || parseDateAny(dayRow['التاريخ']); var dayName = dayRow['اليوم_بالعربي'] || ''; var dateDisplay = formatDateDisplay(dayRow['التاريخ']); var dayType = 'normal'; if (dateObj) { var dow = dateObj.getDay(); if (dow === 5) dayType = 'friday'; if (dow === 6) dayType = 'saturday'; } for (var sec in dayRow['sections']) { var students = dayRow['sections'][sec] || []; for (var s = 0; s < students.length; s++) { var studentName = students[s]; if (namesArray.indexOf(studentName) !== -1) { results.push({ 'اليوم': dayRow['اليوم'], 'اليوم_بالعربي': dayName, 'التاريخ': dateDisplay, 'الفرز': sec, 'الاسم_الكامل': studentName, 'dayType': dayType }); } } } });
+            if (results.length === 0) { empty.textContent = 'لم يتم العثور على مناوبات للأسماء المحددة في هذه السنة'; empty.style.display = 'block'; card.classList.add('show'); return; }
+            head.innerHTML = '<tr><th class="col-name">#</th><th class="col-odd">الاسم</th><th class="col-even">اليوم</th><th class="col-odd">التاريخ</th><th class="col-even">الفرز</th></tr>';
+            var bodyHTML = '';
+            results.forEach(function(r, i) { var colorIdx = getSectionColorIndex(r['الفرز']); var rowClass = ''; if (r['dayType'] === 'friday' || r['dayType'] === 'saturday') rowClass = ' row-weekend-stats';
+                bodyHTML += '<tr class="' + rowClass + '">'; bodyHTML += '<td class="col-name">' + (i + 1) + '</td>'; bodyHTML += '<td class="stats-name-cell col-odd">' + r['الاسم_الكامل'] + '</td>'; bodyHTML += '<td class="col-even">' + r['اليوم_بالعربي'] + '</td>'; bodyHTML += '<td class="col-odd">' + r['التاريخ'] + '</td>'; bodyHTML += '<td class="col-even"><span class="stats-badge stats-badge-' + colorIdx + '">' + r['الفرز'] + '</span></td>'; bodyHTML += '</tr>'; });
+            body.innerHTML = bodyHTML; table.style.display = 'table'; card.classList.add('show');
         }
 
-        function updateTodayPanel() {
-            var d = parseDateAny(currentViewDay);
-            document.getElementById('todayDateDisplay').textContent = 'مناوبين يوم ' + (d ? formatDateArabic(d) :
-                currentViewDay);
-            var sectionsMap = {},
-                sectionsOrder = [];
-            allMnaobatRows.forEach(r => {
-                if (r['_isodate'] === currentViewDay && r['sections_data']) {
-                    for (var sec in r['sections_data']) {
-                        if (!sectionsMap[sec]) { sectionsMap[sec] = { 'اولى': [], 'ثانية': [], 'ثالثة': [],
-                                'رابعة': [] };
-                            sectionsOrder.push(sec); }
-                        ['اولى', 'ثانية', 'ثالثة', 'رابعة'].forEach(year => {
-                            var names = r['sections_data'][sec][year] || [];
-                            names.forEach(n => { if (sectionsMap[sec][year].indexOf(n) === -1) sectionsMap[
-                                    sec][year].push(n); });
-                        });
-                    }
-                }
-            });
-            var container = document.getElementById('todaySectionsContainer');
-            if (sectionsOrder.length === 0) {
-                container.innerHTML = '<div class="today-empty">لا توجد مناوبات لهذا اليوم</div>';
-            } else {
-                var html = '';
-                sectionsOrder.forEach(sec => {
-                    var data = sectionsMap[sec];
-                    html += '<div class="today-section"><div class="today-section-title">' + sec +
-                        '</div><div class="today-years">';
-                    var yearLabels = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة'];
-                    var yearKeys = ['اولى', 'ثانية', 'ثالثة', 'رابعة'];
-                    for (var i = 0; i < 4; i++) {
-                        var names = data[yearKeys[i]];
-                        html += '<div class="today-year-group">';
-                        html += '<span class="today-year-label">' + yearLabels[i] + ':</span>';
-                        html += '<span class="today-year-names">';
-                        if (names.length > 0) {
-                            html += names.map(function(name) { return '<span class="student-name">' + name +
-                                    '</span>'; }).join('<span>, </span>');
-                        } else {
-                            html += '<span class="student-name" style="color:#555;">—</span>';
-                        }
-                        html += '</span></div>';
-                    }
-                    html += '</div></div>';
-                });
-                container.innerHTML = html;
-            }
-            var idx = allUniqueDates.indexOf(currentViewDay);
-            document.getElementById('prevDayBtn').disabled = (idx <= 0);
-            document.getElementById('nextDayBtn').disabled = (idx >= allUniqueDates.length - 1);
-            document.querySelectorAll('#mnaobatBody tr.row-today').forEach(tr => tr.classList.remove('row-today'));
-            document.querySelectorAll('#mnaobatBody tr[data-date="' + currentViewDay + '"]').forEach(tr => tr.classList.add(
-                'row-today'));
-            applySearchHighlight();
-        }
-
-        // ---------------------------------------------
-        // دوال النقر والبحث (نفسها)
-        // ---------------------------------------------
-        function handleMnaobatRowClick(tr) {
-            if (clickedRow && clickedRow !== tr) {
-                clickedRow.classList.remove('row-clicked');
-                removeAllClickedHighlights();
-            }
-            if (clickedRow === tr) {
-                tr.classList.remove('row-clicked');
-                removeAllClickedHighlights();
-                clickedRow = null;
-                return;
-            }
-            tr.classList.add('row-clicked');
-            clickedRow = tr;
-            var g = tr.getAttribute('data-day-group');
-            if (g) {
-                var dn = document.getElementById('daynum-' + g);
-                var dnm = document.getElementById('dayname-' + g);
-                if (dn) dn.classList.add('clicked-highlight');
-                if (dnm) dnm.classList.add('clicked-highlight-dayname');
-            }
-        }
-
-        function removeAllClickedHighlights() {
-            document.querySelectorAll('td.day-num.clicked-highlight').forEach(td => td.classList.remove(
-            'clicked-highlight'));
-            document.querySelectorAll('td.clicked-highlight-dayname').forEach(td => td.classList.remove(
-                'clicked-highlight-dayname'));
-        }
-
-        function initSearch() {
-            var inp = document.getElementById('searchInput');
-            var clr = document.getElementById('clearSearchBtn');
-            inp.addEventListener('input', () => { clr.classList.toggle('visible', inp.value.trim().length > 0);
-                applySearchHighlight(); });
-            clr.addEventListener('click', () => { inp.value = '';
-                clr.classList.remove('visible');
-                applySearchHighlight();
-                inp.focus(); });
-            inp.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    inp.blur();
-                    var firstHighlight = document.querySelector('.highlight-name');
-                    if (firstHighlight) {
-                        firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                }
-            });
-        }
-
-        function applySearchHighlight() {
-            var term = document.getElementById('searchInput').value.trim();
-            document.querySelectorAll('.highlight-name').forEach(el => {
-                el.outerHTML = el.textContent;
-            });
-            if (!term) return;
-            document.querySelectorAll('.student-name').forEach(span => {
-                var txt = span.textContent;
-                if (txt.indexOf(term) !== -1) {
-                    var re = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-                    span.innerHTML = txt.replace(re, '<span class="highlight-name">$1</span>');
-                }
-            });
-        }
-
-        // ---------------------------------------------
-        // بدء التحميل
-        // ---------------------------------------------
-        window.addEventListener('DOMContentLoaded', () => {
-            if (typeof XLSX === 'undefined') {
-                var iv = setInterval(() => { if (typeof XLSX !== 'undefined') { clearInterval(iv);
-                        loadSchedule(); } }, 200);
-                setTimeout(() => { clearInterval(iv);
-                    document.getElementById('loadingSpinner').style.display = 'none';
-                    document.getElementById('errorMsg').style.display = 'block'; }, 10000);
-            } else loadSchedule();
-        });
-
-        function loadSchedule() {
-            fetch('./schedule.xlsx')
-                .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })
-                .then(b => { var wb = XLSX.read(new Uint8Array(b), { type: 'array' });
-                    processWorkbook(wb); })
-                .catch(e => {
-                    document.getElementById('loadingSpinner').style.display = 'none';
-                    document.getElementById('errorMsg').style.display = 'block';
-                    console.error(e);
-                });
-        }
+        window.addEventListener('DOMContentLoaded', () => { if (typeof XLSX === 'undefined') { var iv = setInterval(() => { if (typeof XLSX !== 'undefined') { clearInterval(iv); loadSchedule(); } }, 200); setTimeout(() => { clearInterval(iv); document.getElementById('loadingSpinner').style.display = 'none'; document.getElementById('errorMsg').style.display = 'block'; }, 10000); } else loadSchedule(); });
+        function loadSchedule() { fetch('./schedule.xlsx').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); }).then(b => { var wb = XLSX.read(new Uint8Array(b), { type: 'array' }); processWorkbook(wb); }).catch(e => { document.getElementById('loadingSpinner').style.display = 'none'; document.getElementById('errorMsg').style.display = 'block'; console.error(e); }); }
     </script>
 </body>
 </html>
